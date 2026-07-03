@@ -7,9 +7,10 @@ so every puzzle is unique, reproducible by number, and crisp at print resolution
 **Live site:** https://jhsdw123.github.io/spot-difference-studio/
 
 ## Features
-- 4 themes (Garden, Ocean, Space, Farm), 45+ hand-drawn SVG objects
+- 6 themes (Garden, Ocean, Space, Farm, Christmas, Halloween), ~70 hand-drawn SVG objects
 - 3 difficulty levels, 3–15 differences per puzzle
 - Print-ready PDF export (A4 / US Letter) with a separate answer key page
+- Ink-saver black & white mode (color-based differences are excluded automatically)
 - Deterministic seeds — type a puzzle number to recreate the exact puzzle
 - Pro tier: bulk packs (10/25/50 puzzles), KDP trim sizes, commercial license
 
