@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /tools/
+
+Sitemap: https://jhsdw123.github.io/spot-difference-studio/sitemap.xml

@@ -1,0 +1,15 @@
+import puppeteer from 'puppeteer';
+const browser = await puppeteer.launch({ headless: 'new' });
+const page = await browser.newPage();
+const errors = [];
+page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+page.on('pageerror', e => errors.push('PAGEERROR: ' + e.message));
+await page.setViewport({ width: 1440, height: 1000 });
+await page.goto('https://jhsdw123.github.io/spot-difference-studio/', { waitUntil: 'networkidle0', timeout: 45000 });
+await page.waitForSelector('#pv-a svg', { timeout: 10000 });
+console.log('live preview rendered:', await page.$eval('#pv-meta', e => e.textContent));
+await page.click('[data-theme="space"]');
+await page.waitForFunction(() => document.querySelector('#pv-meta').textContent.includes('Space'));
+console.log('theme switch on live: OK');
+console.log('console errors:', errors.length ? errors : 'none');
+await browser.close();
