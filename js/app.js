@@ -2,6 +2,7 @@
 
 import { generatePuzzle, DIFF_DEFAULTS, THEMES } from './engine.js';
 import { exportPdf } from './pdf.js';
+import { loadLibrary, librarySize, getPhotoPuzzle, samplePhotoPuzzles, photoSvg } from './library.js';
 
 const CONFIG = {
   // shown in PDF footers; uses the real host once deployed, falls back to the target domain locally
@@ -12,6 +13,7 @@ const CONFIG = {
 };
 
 const state = {
+  style: 'photo',              // 'photo' (illustrated library) | 'classic' (procedural SVG)
   themeId: 'garden',
   difficulty: 'medium',
   diffCount: DIFF_DEFAULTS.medium,
@@ -19,6 +21,7 @@ const state = {
   layout: 'side',
   bw: false,
   seed: null,
+  photoNum: null,
   puzzle: null,
   showAnswers: false,
   pro: false,
@@ -58,37 +61,67 @@ function applyPro(on) {
 
 function newSeed() { return Math.floor(Math.random() * 900000) + 100000; }
 
-function regenerate(freshSeed = true) {
-  if (freshSeed || !state.seed) state.seed = newSeed();
-  state.puzzle = generatePuzzle({
-    themeId: state.themeId,
-    difficulty: state.difficulty,
-    diffCount: state.diffCount,
-    seed: state.seed,
-    bw: state.bw,
-  });
-  $('#seed-input').value = state.seed;
+async function regenerate(fresh = true) {
+  if (state.style === 'photo') {
+    try {
+      await loadLibrary();
+    } catch (e) {
+      // library not deployed — fall back to classic so the tool still works
+      setStyle('classic');
+      return;
+    }
+    state.puzzle = getPhotoPuzzle(fresh ? null : state.photoNum);
+    state.photoNum = state.puzzle.num;
+    $('#seed-input').value = state.photoNum;
+  } else {
+    if (fresh || !state.seed) state.seed = newSeed();
+    state.puzzle = generatePuzzle({
+      themeId: state.themeId,
+      difficulty: state.difficulty,
+      diffCount: state.diffCount,
+      seed: state.seed,
+      bw: state.bw,
+    });
+    $('#seed-input').value = state.seed;
+  }
   renderPreview();
 }
 
 function renderPreview() {
   const p = state.puzzle;
   if (!p) return;
-  $('#pv-a').innerHTML = p.svgA;
-  $('#pv-b').innerHTML = state.showAnswers ? p.svgAnswer : p.svgB;
-  $('#pv-meta').textContent = `Puzzle #${p.seed} · ${THEMES[p.themeId].label} · ${p.difficulty} · ${p.count} differences`;
+  if (p.photo) {
+    $('#pv-a').innerHTML = photoSvg(p.aUrl);
+    $('#pv-b').innerHTML = photoSvg(p.bUrl, state.showAnswers ? p.regions : null);
+    $('#pv-meta').textContent = `Photo #${p.num} of ${librarySize()} · ${p.count} differences`;
+    $('#print-a').innerHTML = photoSvg(p.aUrl);
+    $('#print-b').innerHTML = photoSvg(p.bUrl);
+    $('#print-foot').textContent = `Photo #${p.num} · free printables at ${CONFIG.siteUrl}`;
+  } else {
+    $('#pv-a').innerHTML = p.svgA;
+    $('#pv-b').innerHTML = state.showAnswers ? p.svgAnswer : p.svgB;
+    $('#pv-meta').textContent = `Puzzle #${p.seed} · ${THEMES[p.themeId].label} · ${p.difficulty} · ${p.count} differences`;
+    $('#print-a').innerHTML = p.svgA;
+    $('#print-b').innerHTML = p.svgB;
+    $('#print-foot').textContent = `Puzzle #${p.seed} · free printables at ${CONFIG.siteUrl}`;
+  }
   $('#pv-imgs').classList.toggle('side', state.layout === 'side');
-  // print area mirrors the current puzzle
   $('#print-title').textContent = 'Spot the Difference!';
   $('#print-sub').textContent = `Can you find all ${p.count} differences?`;
-  $('#print-a').innerHTML = p.svgA;
-  $('#print-b').innerHTML = p.svgB;
-  $('#print-foot').textContent = `Puzzle #${p.seed} · free printables at ${CONFIG.siteUrl}`;
+}
+
+function setStyle(style) {
+  state.style = style;
+  $$('#style-seg button').forEach(b => b.classList.toggle('active', b.dataset.value === style));
+  document.body.classList.toggle('photo-mode', style === 'photo');
+  regenerate(true);
 }
 
 /* ---------- events ---------- */
 
 function bind() {
+  $$('#style-seg button').forEach(btn => btn.addEventListener('click', () => setStyle(btn.dataset.value)));
+
   $$('.theme-btn').forEach(btn => btn.addEventListener('click', () => {
     $$('.theme-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -122,7 +155,10 @@ function bind() {
 
   $('#seed-input').addEventListener('change', (e) => {
     const v = parseInt(e.target.value, 10);
-    if (v > 0) { state.seed = v; regenerate(false); }
+    if (v > 0) {
+      if (state.style === 'photo') state.photoNum = v; else state.seed = v;
+      regenerate(false);
+    }
   });
   $('#seed-random').addEventListener('click', () => regenerate(true));
 
@@ -156,15 +192,21 @@ function bind() {
     const btn = $('#btn-batch');
     btn.disabled = true;
     try {
-      const puzzles = [];
-      for (let i = 0; i < n; i++) {
-        puzzles.push(generatePuzzle({
-          themeId: state.themeId,
-          difficulty: state.difficulty,
-          diffCount: state.diffCount,
-          seed: newSeed(),
-          bw: state.bw,
-        }));
+      let puzzles;
+      if (state.style === 'photo') {
+        await loadLibrary();
+        puzzles = samplePhotoPuzzles(n);
+      } else {
+        puzzles = [];
+        for (let i = 0; i < n; i++) {
+          puzzles.push(generatePuzzle({
+            themeId: state.themeId,
+            difficulty: state.difficulty,
+            diffCount: state.diffCount,
+            seed: newSeed(),
+            bw: state.bw,
+          }));
+        }
       }
       await exportPdf(puzzles, {
         pageFormat: state.pageFormat, siteUrl: CONFIG.siteUrl,
@@ -202,5 +244,5 @@ function bind() {
 document.addEventListener('DOMContentLoaded', () => {
   bind();
   if (localStorage.getItem('sds_license')) applyPro(true);
-  regenerate(true);
+  setStyle(state.style);
 });
