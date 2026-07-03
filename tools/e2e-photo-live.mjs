@@ -1,0 +1,16 @@
+import puppeteer from 'puppeteer';
+const browser = await puppeteer.launch({ headless: 'new' });
+const page = await browser.newPage();
+const errors = [];
+page.on('pageerror', e => errors.push(e.message));
+page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+await page.setViewport({ width: 1440, height: 1000 });
+await page.goto('https://jhsdw123.github.io/spot-difference-studio/', { waitUntil: 'networkidle0', timeout: 60000 });
+await page.waitForSelector('#pv-a svg image', { timeout: 15000 });
+console.log('LIVE photo mode:', await page.$eval('#pv-meta', e => e.textContent));
+await page.click('#answers-toggle');
+await new Promise(r => setTimeout(r, 800));
+console.log('LIVE answer circles:', await page.$eval('#pv-b svg', s => s.querySelectorAll('circle').length));
+await page.screenshot({ path: 'live-photo.png' });
+console.log('errors:', errors.length ? errors : 'none');
+await browser.close();

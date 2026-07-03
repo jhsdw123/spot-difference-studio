@@ -1,25 +1,37 @@
-// Illustrated (photo) puzzle library — 1:1 AI-illustrated pairs mirrored from the
-// Spot Hunt production DB. Metadata in library/manifest.json, images in library/img/.
+// Illustrated puzzle library — 1:1 AI-illustrated pairs (photo-realistic scenes mirrored
+// from the Spot Hunt production DB + cartoon pairs from the generation pipeline).
+// Metadata in library/manifest.json, images in library/img/.
 
 let manifest = null;
+let byStyle = {};
+
+const STYLE_LABELS = { photo: 'Photo', toon: 'Cartoon' };
 
 export async function loadLibrary() {
   if (manifest) return manifest;
   const res = await fetch('library/manifest.json');
   if (!res.ok) throw new Error('library manifest missing');
   manifest = await res.json();
+  byStyle = {};
+  for (const e of manifest) {
+    const s = e.style || 'photo';
+    (byStyle[s] = byStyle[s] || []).push(e);
+  }
   return manifest;
 }
 
-export function librarySize() { return manifest ? manifest.length : 0; }
+export function librarySize(style) { return (byStyle[style] || []).length; }
 
-// num is 1-based; omit for random.
-export function getPhotoPuzzle(num) {
-  if (!manifest || !manifest.length) throw new Error('library not loaded');
-  let idx = (num >= 1 && num <= manifest.length) ? num - 1 : Math.floor(Math.random() * manifest.length);
-  const e = manifest[idx];
+// num is 1-based within the style; omit for random.
+export function getLibraryPuzzle(style, num) {
+  const pool = byStyle[style] || [];
+  if (!pool.length) throw new Error('no puzzles for style ' + style);
+  const idx = (num >= 1 && num <= pool.length) ? num - 1 : Math.floor(Math.random() * pool.length);
+  const e = pool[idx];
   return {
-    photo: true,
+    photo: true, // library puzzle (raster pair) — as opposed to procedural SVG
+    style,
+    styleLabel: STYLE_LABELS[style] || 'Photo',
     num: idx + 1,
     id: e.id,
     count: e.count,
@@ -29,14 +41,14 @@ export function getPhotoPuzzle(num) {
   };
 }
 
-export function samplePhotoPuzzles(n) {
-  if (!manifest || !manifest.length) throw new Error('library not loaded');
-  const order = manifest.map((_, i) => i);
+export function sampleLibraryPuzzles(style, n) {
+  const pool = byStyle[style] || [];
+  const order = pool.map((_, i) => i);
   for (let i = order.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [order[i], order[j]] = [order[j], order[i]];
   }
-  return order.slice(0, Math.min(n, order.length)).map(i => getPhotoPuzzle(i + 1));
+  return order.slice(0, Math.min(n, order.length)).map(i => getLibraryPuzzle(style, i + 1));
 }
 
 // Inline-SVG wrapper so the same .frame styling works for photos, with optional answer circles.

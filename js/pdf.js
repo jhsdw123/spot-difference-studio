@@ -82,7 +82,7 @@ function fitImage(pageW, availH, margin, ratio) {
 }
 
 function puzzleLabel(p) {
-  return p.photo ? `Photo #${p.num}` : `Puzzle #${p.seed} · ${p.themeId} · ${p.difficulty}`;
+  return p.photo ? `${p.styleLabel} #${p.num}` : `Puzzle #${p.seed} · ${p.themeId} · ${p.difficulty}`;
 }
 
 function drawPuzzlePage(doc, puzzle, fmt, imgs, siteUrl) {
@@ -130,7 +130,7 @@ function drawAnswerPages(doc, puzzles, imgsList, fmt, siteUrl) {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(110, 105, 98);
-      doc.text(p.photo ? `Photo #${p.num}` : `Puzzle #${p.seed}`, fmt.w / 2, y + 3, { align: 'center' });
+      doc.text(p.photo ? `${p.styleLabel} #${p.num}` : `Puzzle #${p.seed}`, fmt.w / 2, y + 3, { align: 'center' });
       doc.addImage(imgs.imgAns, imgs.type, im.x, y + 6, im.w, im.h);
     }
     doc.setFontSize(8.5);
@@ -158,7 +158,7 @@ export async function exportPdf(puzzles, { pageFormat = 'a4', siteUrl = '', onPr
 
   const first = puzzles[0];
   const name = puzzles.length === 1
-    ? (first.photo ? `spot-the-difference-photo-${first.num}.pdf` : `spot-the-difference-${first.themeId}-${first.seed}.pdf`)
+    ? (first.photo ? `spot-the-difference-${(first.styleLabel || 'photo').toLowerCase()}-${first.num}.pdf` : `spot-the-difference-${first.themeId}-${first.seed}.pdf`)
     : `spot-the-difference-pack-${puzzles.length}-puzzles.pdf`;
   doc.save(name);
 }

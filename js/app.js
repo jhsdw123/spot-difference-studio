@@ -2,7 +2,7 @@
 
 import { generatePuzzle, DIFF_DEFAULTS, THEMES } from './engine.js';
 import { exportPdf } from './pdf.js';
-import { loadLibrary, librarySize, getPhotoPuzzle, samplePhotoPuzzles, photoSvg } from './library.js';
+import { loadLibrary, librarySize, getLibraryPuzzle, sampleLibraryPuzzles, photoSvg } from './library.js';
 
 const CONFIG = {
   // shown in PDF footers; uses the real host once deployed, falls back to the target domain locally
@@ -13,7 +13,7 @@ const CONFIG = {
 };
 
 const state = {
-  style: 'photo',              // 'photo' (illustrated library) | 'classic' (procedural SVG)
+  style: 'toon',               // 'toon' | 'photo' (library styles) | 'classic' (procedural SVG)
   themeId: 'garden',
   difficulty: 'medium',
   diffCount: DIFF_DEFAULTS.medium,
@@ -62,15 +62,16 @@ function applyPro(on) {
 function newSeed() { return Math.floor(Math.random() * 900000) + 100000; }
 
 async function regenerate(fresh = true) {
-  if (state.style === 'photo') {
+  if (state.style !== 'classic') {
     try {
       await loadLibrary();
+      if (!librarySize(state.style)) throw new Error('empty style');
     } catch (e) {
       // library not deployed — fall back to classic so the tool still works
       setStyle('classic');
       return;
     }
-    state.puzzle = getPhotoPuzzle(fresh ? null : state.photoNum);
+    state.puzzle = getLibraryPuzzle(state.style, fresh ? null : state.photoNum);
     state.photoNum = state.puzzle.num;
     $('#seed-input').value = state.photoNum;
   } else {
@@ -93,10 +94,10 @@ function renderPreview() {
   if (p.photo) {
     $('#pv-a').innerHTML = photoSvg(p.aUrl);
     $('#pv-b').innerHTML = photoSvg(p.bUrl, state.showAnswers ? p.regions : null);
-    $('#pv-meta').textContent = `Photo #${p.num} of ${librarySize()} · ${p.count} differences`;
+    $('#pv-meta').textContent = `${p.styleLabel} #${p.num} of ${librarySize(p.style)} · ${p.count} differences`;
     $('#print-a').innerHTML = photoSvg(p.aUrl);
     $('#print-b').innerHTML = photoSvg(p.bUrl);
-    $('#print-foot').textContent = `Photo #${p.num} · free printables at ${CONFIG.siteUrl}`;
+    $('#print-foot').textContent = `${p.styleLabel} #${p.num} · free printables at ${CONFIG.siteUrl}`;
   } else {
     $('#pv-a').innerHTML = p.svgA;
     $('#pv-b').innerHTML = state.showAnswers ? p.svgAnswer : p.svgB;
@@ -113,7 +114,8 @@ function renderPreview() {
 function setStyle(style) {
   state.style = style;
   $$('#style-seg button').forEach(b => b.classList.toggle('active', b.dataset.value === style));
-  document.body.classList.toggle('photo-mode', style === 'photo');
+  document.body.classList.toggle('photo-mode', style !== 'classic');
+  state.photoNum = null; // numbering is per-style
   regenerate(true);
 }
 
@@ -156,7 +158,7 @@ function bind() {
   $('#seed-input').addEventListener('change', (e) => {
     const v = parseInt(e.target.value, 10);
     if (v > 0) {
-      if (state.style === 'photo') state.photoNum = v; else state.seed = v;
+      if (state.style !== 'classic') state.photoNum = v; else state.seed = v;
       regenerate(false);
     }
   });
@@ -193,9 +195,9 @@ function bind() {
     btn.disabled = true;
     try {
       let puzzles;
-      if (state.style === 'photo') {
+      if (state.style !== 'classic') {
         await loadLibrary();
-        puzzles = samplePhotoPuzzles(n);
+        puzzles = sampleLibraryPuzzles(state.style, n);
       } else {
         puzzles = [];
         for (let i = 0; i < n; i++) {
