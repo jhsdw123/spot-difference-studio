@@ -5,3 +5,4 @@ tools/package-lock.json
 *.log
 tools/bin/
 tools/kdp-hd/
+tools/*.pdf
