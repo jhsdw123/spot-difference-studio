@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Printable Spot the Difference Generator (with Answer Key) — Spot the Difference Studio</title>
+<meta name="description" content="Generate unlimited printable spot-the-difference puzzles for free. Pick a theme and difficulty, download a print-ready PDF with answer key. Perfect for teachers, senior care activities, kids, and puzzle book creators.">
+<link rel="canonical" href="https://spotdifferencestudio.com/">
+<meta property="og:title" content="Free Printable Spot the Difference Generator">
+<meta property="og:description" content="Unlimited printable spot-the-difference puzzles with answer keys. Free, no signup, works in your browser.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='42' cy='42' r='30' fill='none' stroke='%23e8262d' stroke-width='11'/%3E%3Cpath d='M65 65 L88 88' stroke='%23e8262d' stroke-width='13' stroke-linecap='round'/%3E%3Ccircle cx='42' cy='42' r='12' fill='%23ffc93c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Spot the Difference Studio",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any (browser)",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "description": "Free online generator for printable spot-the-difference puzzles with answer keys."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is this spot the difference generator really free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Generating, printing, and downloading individual puzzles with answer keys is completely free, with no signup. A one-time Pro upgrade adds bulk puzzle packs and publisher page sizes." } },
+    { "@type": "Question", "name": "Can I use the puzzles in my classroom or care home?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. Free puzzles may be printed and shared for personal, classroom, therapy, and activity use without limit." } },
+    { "@type": "Question", "name": "Can I sell books made with these puzzles (Amazon KDP, Etsy)?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Commercial use, including puzzle books you sell on Amazon KDP or Etsy, is included in the Pro license. Pro also adds bulk generation and KDP trim sizes." } },
+    { "@type": "Question", "name": "Are the puzzles always different?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Puzzles are generated from a random seed, so there are hundreds of thousands of unique combinations. Each puzzle shows its number so you can recreate it any time." } },
+    { "@type": "Question", "name": "Do the puzzles work for people with dementia or low vision?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The Easy level uses fewer, larger objects and bold obvious changes, which activity professionals typically use for seniors and memory care. Medium and Hard suit kids and adults." } }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header class="site">
+  <div class="site-inner">
+    <a class="logo" href="#">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="42" cy="42" r="30" fill="none" stroke="#e8262d" stroke-width="11"/>
+        <path d="M65 65 L88 88" stroke="#e8262d" stroke-width="13" stroke-linecap="round"/>
+        <circle cx="42" cy="42" r="12" fill="#ffc93c"/>
+      </svg>
+      Spot the Difference Studio
+    </a>
+    <nav class="main">
+      <a href="#generator">Generator</a>
+      <a href="#uses">Who it's for</a>
+      <a href="#faq">FAQ</a>
+      <a href="#pro" class="pro-link">Pro</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <h1>Free Printable <em>Spot the Difference</em> Generator</h1>
+    <p class="sub">Create unlimited spot-the-difference puzzles in your browser. Pick a theme and difficulty,
+    then print or download a PDF — answer key included. No signup, no watermarks on puzzles.</p>
+    <div class="badges">
+      <span>✓ 100% free puzzles</span>
+      <span>✓ Answer key included</span>
+      <span>✓ Print-ready A4 &amp; Letter</span>
+      <span>✓ No account needed</span>
+    </div>
+  </section>
+
+  <!-- AdSense slot: activate after approval
+  <div class="ad-slot" id="ad-top"></div>
+  -->
+
+  <section id="generator" class="gen">
+    <div class="panel">
+      <h2>Puzzle settings</h2>
+
+      <div class="ctrl-group">
+        <label class="head">Theme</label>
+        <div class="theme-grid">
+          <button class="theme-btn active" data-theme="garden"><span class="emoji">🌷</span>Garden</button>
+          <button class="theme-btn" data-theme="ocean"><span class="emoji">🐠</span>Ocean</button>
+          <button class="theme-btn" data-theme="space"><span class="emoji">🚀</span>Space</button>
+          <button class="theme-btn" data-theme="farm"><span class="emoji">🐮</span>Farm</button>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <label class="head">Difficulty</label>
+        <div class="seg" id="difficulty-seg">
+          <button data-value="easy">Easy</button>
+          <button data-value="medium" class="active">Medium</button>
+          <button data-value="hard">Hard</button>
+        </div>
+      </div>
+
+      <div class="ctrl-group row2">
+        <div>
+          <label class="head" for="diff-count">Differences</label>
+          <input type="number" id="diff-count" min="3" max="15" value="8">
+        </div>
+        <div>
+          <label class="head" for="page-format">Paper size</label>
+          <select id="page-format">
+            <option value="a4">A4</option>
+            <option value="letter">US Letter</option>
+            <option value="kdp85x11">KDP 8.5″×11″ (Pro)</option>
+            <option value="kdp6x9">KDP 6″×9″ (Pro)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <label class="head">Preview layout</label>
+        <div class="seg" id="layout-seg">
+          <button data-value="stack">Stacked</button>
+          <button data-value="side" class="active">Side by side</button>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <label class="head" for="seed-input">Puzzle number</label>
+        <div class="seed-row">
+          <input type="number" id="seed-input" min="1" placeholder="random">
+          <button id="seed-random" title="Random puzzle">🎲</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-generate">✨ New puzzle</button>
+      <div class="btn-row">
+        <button class="btn btn-teal" id="btn-pdf">⬇ Download PDF</button>
+        <button class="btn btn-secondary" id="btn-print">🖨 Print</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="preview-head">
+        <span class="meta" id="pv-meta">Generating…</span>
+        <label class="toggle"><input type="checkbox" id="answers-toggle"> Show answers</label>
+      </div>
+      <div class="pv-imgs side" id="pv-imgs">
+        <div>
+          <div class="pv-label">Picture A</div>
+          <div class="frame" id="pv-a"></div>
+        </div>
+        <div>
+          <div class="pv-label">Picture B — find the changes</div>
+          <div class="frame" id="pv-b"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pro" class="pro-card">
+    <div>
+      <h2>🧩 Pro — for puzzle book creators</h2>
+      <p>Everything stays free for classrooms and personal printing. Pro is for publishers who need volume:</p>
+      <ul>
+        <li><strong>Bulk packs:</strong> generate 10, 25, or 50 unique puzzles as a single print-ready PDF book interior</li>
+        <li><strong>KDP trim sizes:</strong> 8.5″×11″ and 6″×9″ page formats for Amazon KDP</li>
+        <li><strong>Commercial license:</strong> sell the puzzles in books, worksheets, and activity packs</li>
+        <li>One-time payment, lifetime license — no subscription</li>
+      </ul>
+    </div>
+    <div class="pro-box">
+      <div class="pro-price">$29 <small>one-time</small></div>
+      <a class="btn btn-primary gumroad-link" href="#" target="_blank" rel="noopener">Get Pro on Gumroad</a>
+      <div id="pro-status" class="license-msg ok"></div>
+      <div id="license-box">
+        <label class="head" for="license-input" style="font-size:.85rem;font-weight:700;display:block;text-align:left;margin-bottom:6px;">Already bought? Enter your license key:</label>
+        <div class="license-row">
+          <input type="text" id="license-input" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX">
+          <button class="btn btn-secondary" id="license-apply" style="width:auto;">Apply</button>
+        </div>
+        <div id="license-msg" class="license-msg"></div>
+      </div>
+      <div style="border-top:1px solid var(--line);padding-top:12px;display:grid;gap:8px;">
+        <label class="head" for="batch-select" style="font-size:.85rem;font-weight:700;text-align:left;">Puzzle pack (uses current settings):</label>
+        <div class="license-row">
+          <select id="batch-select">
+            <option value="3">3 puzzles (free sample)</option>
+            <option value="10" data-pro disabled>10 puzzles (Pro)</option>
+            <option value="25" data-pro disabled>25 puzzles (Pro)</option>
+            <option value="50" data-pro disabled>50 puzzles (Pro)</option>
+          </select>
+          <button class="btn btn-teal" id="btn-batch" style="width:auto;white-space:nowrap;">Generate pack</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="uses" class="content">
+    <h2>Who uses these puzzles?</h2>
+    <p class="lead">Spot-the-difference puzzles build visual attention, working memory, and processing speed — and they work at any age, in any language.</p>
+    <div class="cards4">
+      <div class="card">
+        <div class="ico">🍎</div>
+        <h3>Teachers &amp; ESL classrooms</h3>
+        <p>Print warm-up activities, early-finisher tasks, and speaking prompts ("describe the difference") in seconds. Every worksheet is unique, so no answer sharing between classes.</p>
+      </div>
+      <div class="card">
+        <div class="ico">💐</div>
+        <h3>Senior care &amp; memory therapy</h3>
+        <p>Activity directors use the Easy level — fewer, larger objects with bold changes — for engaging, dignity-preserving cognitive activities in dementia and stroke-recovery care.</p>
+      </div>
+      <div class="card">
+        <div class="ico">🧒</div>
+        <h3>Parents &amp; kids</h3>
+        <p>Screen-free quiet time on demand. Print a fresh puzzle for road trips, restaurants, and rainy days. Kids love the Ocean and Space themes.</p>
+      </div>
+      <div class="card">
+        <div class="ico">📚</div>
+        <h3>Puzzle book publishers</h3>
+        <p>Making activity books for Amazon KDP or Etsy? Generate a full book interior — 25 or 50 unique puzzles plus answer keys — in one click with Pro.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" class="content">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step"><h3>Pick a theme</h3><p>Garden, Ocean, Space, or Farm — each with its own hand-drawn art style and dozens of objects.</p></div>
+      <div class="step"><h3>Choose difficulty</h3><p>Easy for young kids and seniors, Medium for casual fun, Hard for eagle-eyed puzzle fans (up to 15 differences).</p></div>
+      <div class="step"><h3>Print or download</h3><p>Get a print-ready PDF with the puzzle and a separate answer key page. A4 and US Letter supported.</p></div>
+    </div>
+  </section>
+
+  <section id="faq" class="content faq">
+    <h2>Frequently asked questions</h2>
+    <details>
+      <summary>Is this really free?</summary>
+      <p>Yes. Generating, printing, and downloading individual puzzles with answer keys is completely free, with no signup and no watermark on the puzzle itself. The one-time Pro upgrade is only needed for bulk packs and commercial publishing.</p>
+    </details>
+    <details>
+      <summary>Can I use the puzzles in my classroom, therapy group, or care home?</summary>
+      <p>Absolutely — that's what this tool is for. Print and share freely for personal, classroom, therapy, and activity use.</p>
+    </details>
+    <details>
+      <summary>Can I sell books made with these puzzles (Amazon KDP, Etsy)?</summary>
+      <p>Yes, with the Pro license. It covers commercial use in puzzle books, printables you sell, and activity packs, and adds KDP trim sizes plus 10–50 puzzle bulk generation.</p>
+    </details>
+    <details>
+      <summary>Are the puzzles always different?</summary>
+      <p>Yes — each puzzle is generated from a random seed, giving hundreds of thousands of unique combinations. The puzzle number is printed on every page, so you can recreate the exact same puzzle by typing its number.</p>
+    </details>
+    <details>
+      <summary>Do the puzzles work for people with dementia or low vision?</summary>
+      <p>The Easy level was designed with activity professionals in mind: fewer objects, larger art, and bold obvious changes (a removed object, a clear color change). Start there and move up as it suits the person.</p>
+    </details>
+    <details>
+      <summary>Why do the two pictures sometimes look identical?</summary>
+      <p>They never are! The number of differences is shown above the puzzle. If you're stuck, toggle "Show answers" or check the answer key page in the PDF.</p>
+    </details>
+  </section>
+
+</div>
+
+<footer class="site">
+  <div class="foot-links">
+    <a href="#generator">Generator</a>
+    <a href="#pro">Pro license</a>
+    <a href="#faq">FAQ</a>
+    <a id="yt-link" href="#" style="display:none" target="_blank" rel="noopener">YouTube: Spot Hunt</a>
+    <a href="mailto:9.dain.9@gmail.com">Contact</a>
+  </div>
+  <div>© 2026 Spot the Difference Studio · All puzzles are procedurally generated original artwork.</div>
+</footer>
+
+<!-- hidden print layout -->
+<div id="print-area">
+  <div class="print-title" id="print-title"></div>
+  <div class="print-sub" id="print-sub"></div>
+  <div class="frame" id="print-a"></div>
+  <div class="frame" id="print-b"></div>
+  <div class="print-foot" id="print-foot"></div>
+</div>
+
+<script src="vendor/jspdf.umd.min.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
