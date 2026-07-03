@@ -524,6 +524,262 @@ const farmObjects = [
   },
 ];
 
+/* ============================== CHRISTMAS ============================== */
+
+const christmasObjects = [
+  {
+    id: 'xmastree', zone: 'ground', canMirror: false, canRotate: false,
+    colors: ['#e74c3c', '#ffc93c', '#3498db', '#e91e8c'],
+    draw: c => `
+      <rect x="44" y="82" width="12" height="14" fill="#8d6437" ${S}/>
+      <path d="M50 8 L72 38 L60 38 L78 62 L64 62 L84 86 L16 86 L36 62 L22 62 L40 38 L28 38 Z" fill="#2e7d4f" ${S}/>
+      <path d="M43 4 L50 10 L57 4 L55 13 L50 16 L45 13 Z" fill="#ffc93c" ${S}/>
+      <circle cx="44" cy="46" r="4.5" fill="${c}" ${SN}/>
+      <circle cx="58" cy="58" r="4.5" fill="${c}" ${SN}/>
+      <circle cx="36" cy="72" r="4.5" fill="${c}" ${SN}/>
+      <circle cx="62" cy="76" r="4.5" fill="${c}" ${SN}/>`
+  },
+  {
+    id: 'snowman', zone: 'ground', canMirror: true, canRotate: false,
+    colors: ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6'],
+    draw: c => `
+      <circle cx="50" cy="74" r="23" fill="#ffffff" ${S}/>
+      <circle cx="50" cy="40" r="16" fill="#ffffff" ${S}/>
+      <path d="M36 22 L64 22 L62 14 L38 14 Z M42 14 L58 14 L58 4 L42 4 Z" fill="#3b3b3b" ${S}/>
+      <path d="M34 52 Q50 62 66 52 L66 46 Q50 56 34 46 Z" fill="${c}" ${S}/>
+      <path d="M58 54 L62 66 L54 66 Z" fill="${c}" ${SN}/>
+      <circle cx="44" cy="38" r="2.2" fill="${O}"/><circle cx="56" cy="38" r="2.2" fill="${O}"/>
+      <path d="M50 42 L60 45 L50 47 Z" fill="#ff8c1a" ${SN}/>
+      <circle cx="50" cy="70" r="2.2" fill="${O}"/><circle cx="50" cy="80" r="2.2" fill="${O}"/>`
+  },
+  {
+    id: 'gift', zone: 'ground', canMirror: false, canRotate: false,
+    colors: ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#ffc93c'],
+    draw: c => `
+      <rect x="20" y="46" width="60" height="50" rx="4" fill="${c}" ${S}/>
+      <rect x="16" y="34" width="68" height="16" rx="4" fill="${shade(c, 0.25)}" ${S}/>
+      <rect x="44" y="34" width="12" height="62" fill="${shade(c, 0.55)}" ${SN}/>
+      <path d="M50 34 Q34 30 36 18 Q46 16 50 30 Q54 16 64 18 Q66 30 50 34 Z" fill="${shade(c, 0.55)}" ${S}/>`
+  },
+  {
+    id: 'candycane', zone: 'ground', canMirror: true, canRotate: true,
+    colors: ['#e74c3c', '#2ecc71', '#e91e8c'],
+    draw: c => `
+      <path d="M36 96 L36 34 Q36 12 56 12 Q74 12 74 30 L62 30 Q62 24 56 24 Q48 24 48 34 L48 96 Z" fill="#ffffff" ${S}/>
+      <path d="M36 44 L48 40 M36 60 L48 56 M36 76 L48 72 M38 26 Q42 20 48 24 M58 12 Q64 14 66 20" stroke="${c}" stroke-width="7" fill="none"/>
+      <path d="M36 96 L36 34 Q36 12 56 12 Q74 12 74 30 L62 30 Q62 24 56 24 Q48 24 48 34 L48 96 Z" fill="none" ${S}/>`
+  },
+  {
+    id: 'stocking', zone: 'ground', canMirror: true, canRotate: false,
+    colors: ['#e74c3c', '#2ecc71', '#3498db', '#9b59b6'],
+    draw: c => `
+      <path d="M34 26 L66 26 L66 62 Q66 70 74 74 Q86 80 82 90 Q76 98 64 94 Q52 88 48 76 L44 62 Q34 50 34 26 Z" fill="${c}" ${S}/>
+      <rect x="30" y="12" width="40" height="18" rx="6" fill="#ffffff" ${S}/>
+      <circle cx="58" cy="46" r="5" fill="#ffffff" ${SN}/>`
+  },
+  {
+    id: 'bell', zone: 'ground', canMirror: false, canRotate: true,
+    colors: ['#e74c3c', '#2ecc71', '#9b59b6'],
+    draw: c => `
+      <path d="M40 18 Q40 8 50 8 Q60 8 60 18" fill="none" ${S}/>
+      <path d="M26 74 Q26 66 32 62 Q36 38 50 24 Q64 38 68 62 Q74 66 74 74 Z" fill="#ffc93c" ${S}/>
+      <circle cx="50" cy="82" r="8" fill="#ffc93c" ${S}/>
+      <path d="M38 22 Q50 14 62 22 L58 34 Q50 28 42 34 Z" fill="${c}" ${S}/>`
+  },
+  {
+    id: 'gingerbread', zone: 'ground', canMirror: false, canRotate: false,
+    colors: ['#e74c3c', '#2ecc71', '#3498db'],
+    draw: c => `
+      <circle cx="50" cy="26" r="16" fill="#b5713a" ${S}/>
+      <path d="M38 40 L62 40 L70 52 Q76 58 70 62 Q64 64 60 56 L58 60 L64 88 Q64 94 56 94 L50 78 L44 94 Q36 94 36 88 L42 60 L40 56 Q36 64 30 62 Q24 58 30 52 Z" fill="#b5713a" ${S}/>
+      <circle cx="44" cy="24" r="2.2" fill="${O}"/><circle cx="56" cy="24" r="2.2" fill="${O}"/>
+      <path d="M43 31 Q50 36 57 31" fill="none" ${SN}/>
+      <circle cx="50" cy="50" r="3" fill="${c}" ${SN}/>
+      <circle cx="50" cy="62" r="3" fill="${c}" ${SN}/>
+      <path d="M36 42 Q50 48 64 42" fill="none" stroke="#ffffff" stroke-width="3"/>`
+  },
+  {
+    id: 'reindeer', zone: 'ground', canMirror: true, canRotate: false,
+    colors: ['#a9713d', '#8d6437', '#c98d55'],
+    draw: c => `
+      <path d="M34 74 L34 94 M62 74 L62 94" stroke="${c}" stroke-width="9" stroke-linecap="round"/>
+      <path d="M34 74 L34 94 M62 74 L62 94" stroke="${O}" stroke-width="2" opacity="0.5"/>
+      <ellipse cx="48" cy="64" rx="26" ry="17" fill="${c}" ${S}/>
+      <circle cx="74" cy="42" r="13" fill="${c}" ${S}/>
+      <path d="M66 30 Q60 20 64 12 M66 30 Q56 26 52 18 M80 30 Q84 18 92 16 M80 30 Q88 26 92 30" fill="none" stroke="#7a5230" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="84" cy="46" r="6" fill="#e74c3c" ${SN}/>
+      <circle cx="72" cy="38" r="2.5" fill="${O}"/>
+      <ellipse cx="26" cy="60" rx="7" ry="9" fill="${shade(c, 0.35)}" ${SN}/>`
+  },
+  {
+    id: 'wreath', zone: 'air', canMirror: false, canRotate: false,
+    colors: ['#e74c3c', '#ffc93c', '#9b59b6'],
+    draw: c => `
+      <circle cx="50" cy="52" r="30" fill="none" stroke="#2e7d4f" stroke-width="16"/>
+      <circle cx="50" cy="52" r="30" fill="none" stroke="${O}" stroke-width="2" opacity="0.3"/>
+      <circle cx="30" cy="40" r="4" fill="${c}" ${SN}/>
+      <circle cx="66" cy="34" r="4" fill="${c}" ${SN}/>
+      <circle cx="72" cy="64" r="4" fill="${c}" ${SN}/>
+      <circle cx="34" cy="72" r="4" fill="${c}" ${SN}/>
+      <path d="M50 18 L42 8 L50 12 L58 8 Z M46 18 L54 18 L50 26 Z" fill="#e74c3c" ${SN}/>`
+  },
+  {
+    id: 'ornament', zone: 'air', canMirror: false, canRotate: false,
+    colors: ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#ffc93c'],
+    draw: c => `
+      <path d="M50 2 L50 14" stroke="${O}" stroke-width="2.5"/>
+      <rect x="43" y="14" width="14" height="10" rx="3" fill="#c9a227" ${SN}/>
+      <circle cx="50" cy="58" r="34" fill="${c}" ${S}/>
+      <path d="M18 52 Q34 42 50 52 Q66 62 82 52" fill="none" stroke="${shade(c, 0.45)}" stroke-width="5"/>
+      <circle cx="38" cy="42" r="6" fill="#ffffff" opacity="0.5"/>`
+  },
+  {
+    id: 'snowflake', zone: 'air', canMirror: false, canRotate: false,
+    colors: ['#7fb8e6', '#a5cdee', '#5b9fd4'],
+    draw: c => `
+      ${[0, 60, 120].map(a => `<path d="M50 10 L50 90 M50 22 L40 12 M50 22 L60 12 M50 78 L40 88 M50 78 L60 88" stroke="${c}" stroke-width="6" stroke-linecap="round" fill="none" transform="rotate(${a} 50 50)"/>`).join('')}
+      <circle cx="50" cy="50" r="7" fill="${c}" ${SN}/>`
+  },
+  {
+    id: 'robin', zone: 'air', canMirror: true, canRotate: false,
+    colors: ['#8d6437', '#7a5230'],
+    draw: c => `
+      <ellipse cx="46" cy="58" rx="24" ry="19" fill="${c}" ${S}/>
+      <circle cx="70" cy="44" r="13" fill="${c}" ${S}/>
+      <path d="M60 52 Q66 62 58 68 Q50 70 48 62 Z" fill="#e8552d" ${SN}/>
+      <path d="M82 42 L93 45 L82 50 Z" fill="#ffc93c" ${S}/>
+      <path d="M40 52 Q24 48 20 58 Q30 64 44 60 Z" fill="${shade(c, 0.3)}" ${S}/>
+      <circle cx="73" cy="41" r="2.5" fill="${O}"/>
+      <path d="M40 76 L40 90 M52 76 L52 90" fill="none" ${S}/>`
+  },
+];
+
+/* ============================== HALLOWEEN ============================== */
+
+const halloweenObjects = [
+  {
+    id: 'pumpkin', zone: 'ground', canMirror: false, canRotate: false,
+    colors: ['#ff8c1a', '#ffc93c', '#9b59b6', '#2ecc71'],
+    draw: c => `
+      <path d="M48 22 Q46 12 54 8 L58 14 Q52 16 54 24 Z" fill="#4c7a3a" ${SN}/>
+      <ellipse cx="50" cy="62" rx="36" ry="32" fill="${c}" ${S}/>
+      <ellipse cx="50" cy="62" rx="16" ry="32" fill="none" ${SN}/>
+      <path d="M34 34 Q26 48 26 62 Q26 76 34 90 M66 34 Q74 48 74 62 Q74 76 66 90" fill="none" ${SN}/>
+      <path d="M34 54 L44 62 L34 66 Z M66 54 L56 62 L66 66 Z" fill="${O}"/>
+      <path d="M36 76 L44 70 L48 76 L54 70 L58 76 L64 70 L64 80 Q50 88 36 80 Z" fill="${O}"/>`
+  },
+  {
+    id: 'ghost', zone: 'air', canMirror: true, canRotate: false,
+    colors: ['#ffffff', '#dff1ff', '#e8dcf5'],
+    draw: c => `
+      <path d="M22 92 Q18 40 50 30 Q82 40 78 92 Q72 84 66 92 Q60 84 54 92 Q48 84 42 92 Q36 84 30 92 Q26 84 22 92 Z" fill="${c}" ${S}/>
+      <ellipse cx="40" cy="56" rx="5" ry="8" fill="${O}"/>
+      <ellipse cx="60" cy="56" rx="5" ry="8" fill="${O}"/>
+      <ellipse cx="50" cy="72" rx="6" ry="8" fill="${O}"/>`
+  },
+  {
+    id: 'bat', zone: 'air', canMirror: false, canRotate: true,
+    colors: ['#4a4458', '#3b3b4d'],
+    draw: c => `
+      <path d="M44 50 Q20 30 6 40 Q16 44 16 54 Q28 48 34 56 Q40 50 46 56 Z" fill="${c}" ${S}/>
+      <path d="M56 50 Q80 30 94 40 Q84 44 84 54 Q72 48 66 56 Q60 50 54 56 Z" fill="${c}" ${S}/>
+      <ellipse cx="50" cy="58" rx="14" ry="16" fill="${c}" ${S}/>
+      <path d="M42 46 L46 38 L48 46 M58 46 L54 38 L52 46" fill="${c}" ${SN}/>
+      <circle cx="45" cy="56" r="2.5" fill="#ffc93c"/><circle cx="55" cy="56" r="2.5" fill="#ffc93c"/>
+      <path d="M46 66 Q50 69 54 66" fill="none" stroke="#ffffff" stroke-width="2"/>`
+  },
+  {
+    id: 'witchhat', zone: 'ground', canMirror: true, canRotate: true,
+    colors: ['#9b59b6', '#e8552d', '#2ecc71', '#ffc93c'],
+    draw: c => `
+      <ellipse cx="50" cy="82" rx="38" ry="12" fill="#4a3b5c" ${S}/>
+      <path d="M26 80 Q40 30 66 8 Q60 40 74 78 Q50 90 26 80 Z" fill="#4a3b5c" ${S}/>
+      <path d="M30 72 Q52 82 72 70 L74 78 Q50 90 27 78 Z" fill="${c}" ${S}/>
+      <rect x="46" y="66" width="11" height="11" rx="2" fill="#ffc93c" ${SN}/>`
+  },
+  {
+    id: 'spider', zone: 'air', canMirror: false, canRotate: false,
+    colors: ['#3b3b4d', '#4a4458'],
+    draw: c => `
+      <path d="M50 0 L50 34" stroke="${O}" stroke-width="2.5"/>
+      <path d="M36 52 Q20 46 12 34 M36 60 Q18 60 8 52 M36 68 Q22 72 16 84 M64 52 Q80 46 88 34 M64 60 Q82 60 92 52 M64 68 Q78 72 84 84" fill="none" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="50" cy="62" r="20" fill="${c}" ${S}/>
+      <circle cx="50" cy="38" r="11" fill="${c}" ${S}/>
+      <circle cx="46" cy="36" r="2.5" fill="#ffc93c"/><circle cx="54" cy="36" r="2.5" fill="#ffc93c"/>`
+  },
+  {
+    id: 'cauldron', zone: 'ground', canMirror: false, canRotate: false,
+    colors: ['#2ecc71', '#9b59b6', '#e8552d'],
+    draw: c => `
+      <circle cx="34" cy="26" r="6" fill="${c}" ${SN}/>
+      <circle cx="56" cy="18" r="4.5" fill="${c}" ${SN}/>
+      <circle cx="68" cy="28" r="5" fill="${c}" ${SN}/>
+      <path d="M22 40 Q50 30 78 40 Q80 44 76 46 Q50 38 24 46 Q20 44 22 40 Z" fill="${shade(c, -0.1)}" ${S}/>
+      <path d="M24 46 Q16 78 40 90 L60 90 Q84 78 76 46 Q50 38 24 46 Z" fill="#4a4458" ${S}/>
+      <path d="M30 90 L26 97 M70 90 L74 97" ${S}/>
+      <path d="M30 42 Q50 36 72 43" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round"/>`
+  },
+  {
+    id: 'candycorn', zone: 'ground', canMirror: false, canRotate: true,
+    colors: ['#ff8c1a', '#ffc93c'],
+    draw: c => `
+      <path d="M50 8 Q58 8 60 20 L70 72 Q72 88 50 92 Q28 88 30 72 L40 20 Q42 8 50 8 Z" fill="#ffffff" ${S}/>
+      <path d="M36 42 L64 42 L70 72 Q72 88 50 92 Q28 88 30 72 Z" fill="${c}" ${SN}/>
+      <path d="M33 58 L67 58 L70 72 Q72 88 50 92 Q28 88 30 72 Z" fill="#ffe08a" ${SN}/>
+      <path d="M50 8 Q58 8 60 20 L70 72 Q72 88 50 92 Q28 88 30 72 L40 20 Q42 8 50 8 Z" fill="none" ${S}/>`
+  },
+  {
+    id: 'blackcat', zone: 'ground', canMirror: true, canRotate: false,
+    colors: ['#3b3b4d', '#4a4458'],
+    draw: c => `
+      <path d="M74 60 Q88 58 86 44 Q94 46 92 58 Q90 70 76 70 Z" fill="${c}" ${S}/>
+      <ellipse cx="52" cy="76" rx="26" ry="20" fill="${c}" ${S}/>
+      <circle cx="42" cy="42" r="17" fill="${c}" ${S}/>
+      <path d="M28 32 L26 14 L38 24 M56 32 L58 14 L46 24" fill="${c}" ${S}/>
+      <circle cx="36" cy="40" r="3" fill="#ffc93c"/><circle cx="48" cy="40" r="3" fill="#ffc93c"/>
+      <path d="M38 48 Q42 51 46 48" fill="none" stroke="#ffffff" stroke-width="2"/>
+      <path d="M24 44 L12 42 M24 48 L13 50" stroke="#ffffff" stroke-width="1.8"/>`
+  },
+  {
+    id: 'owl', zone: 'ground', canMirror: false, canRotate: false,
+    colors: ['#8d6437', '#a9713d', '#7f8fa6'],
+    draw: c => `
+      <ellipse cx="50" cy="60" rx="28" ry="34" fill="${c}" ${S}/>
+      <path d="M26 34 L34 20 L42 32 M74 34 L66 20 L58 32" fill="${c}" ${S}/>
+      <circle cx="40" cy="46" r="11" fill="#ffffff" ${SN}/>
+      <circle cx="60" cy="46" r="11" fill="#ffffff" ${SN}/>
+      <circle cx="40" cy="46" r="4.5" fill="${O}"/><circle cx="60" cy="46" r="4.5" fill="${O}"/>
+      <path d="M50 52 L44 60 L56 60 Z" fill="#ffc93c" ${SN}/>
+      <path d="M36 68 Q42 76 50 70 Q58 76 64 68" fill="none" ${SN}/>
+      <path d="M42 92 L42 96 M50 92 L50 97 M58 92 L58 96" ${S}/>`
+  },
+  {
+    id: 'tombstone', zone: 'ground', canMirror: false, canRotate: false,
+    colors: ['#95a5a6', '#7f8fa6', '#b8b8c4'],
+    draw: c => `
+      <path d="M26 96 L26 40 Q26 16 50 16 Q74 16 74 40 L74 96 Z" fill="${c}" ${S}/>
+      <path d="M40 40 L60 40 M50 30 L50 52" stroke="${shade(c, -0.35)}" stroke-width="5" stroke-linecap="round"/>
+      <path d="M36 64 L64 64 M38 74 L62 74" stroke="${shade(c, -0.25)}" stroke-width="3" stroke-linecap="round"/>
+      <path d="M20 96 Q24 86 30 92 Q34 84 40 92" fill="#4c7a3a" ${SN}/>`
+  },
+  {
+    id: 'spookytree', zone: 'ground', canMirror: true, canRotate: false,
+    colors: ['#4a3b5c', '#3b3b4d'],
+    draw: c => `
+      <path d="M46 96 L46 56 Q46 40 34 34 Q26 30 26 20 M46 60 Q46 44 60 38 Q70 34 70 22 M46 70 Q40 62 30 62 M46 52 Q56 50 62 54" fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round"/>
+      <path d="M54 96 L54 56 Q54 44 62 40" fill="none" stroke="${c}" stroke-width="9" stroke-linecap="round"/>
+      <path d="M40 96 L60 96 L58 90 L42 90 Z" fill="${c}" ${SN}/>`
+  },
+  {
+    id: 'moonpop', zone: 'air', canMirror: true, canRotate: false,
+    colors: ['#ffe08a', '#ffd24d'],
+    draw: c => `
+      <path d="M62 10 Q34 18 34 50 Q34 82 62 90 Q44 94 30 84 Q12 70 12 50 Q12 30 30 16 Q44 6 62 10 Z" fill="${c}" ${S}/>
+      <circle cx="30" cy="38" r="4" fill="${shade(c, -0.15)}" ${SN}/>
+      <circle cx="26" cy="60" r="5" fill="${shade(c, -0.15)}" ${SN}/>`
+  },
+];
+
 /* ============================== BACKGROUNDS ============================== */
 // Each returns static SVG for a 1000x700 canvas. rng keeps clouds/stars varied per puzzle
 // but identical between the two images (same scene data).
@@ -597,6 +853,43 @@ const backgrounds = {
       <path d="M0 430 Q300 395 640 432 Q840 452 1000 425 L1000 700 L0 700 Z" fill="#b3d383"/>
       <path d="M0 540 Q350 505 1000 540 L1000 700 L0 700 Z" fill="#9cc46e"/>`;
   },
+  christmas: (rng) => {
+    const flakes = [];
+    const n = 18 + Math.floor(rng() * 8);
+    for (let i = 0; i < n; i++) {
+      const x = 15 + rng() * 970, y = 15 + rng() * 420, r = 2 + rng() * 3;
+      flakes.push(`<circle cx="${x}" cy="${y}" r="${r}" fill="#ffffff" opacity="${0.65 + rng() * 0.35}"/>`);
+    }
+    return `
+      <rect x="0" y="0" width="1000" height="700" fill="#cfdff0"/>
+      <rect x="0" y="0" width="1000" height="260" fill="#c2d4ea"/>
+      ${flakes.join('')}
+      <path d="M0 330 Q250 290 500 330 Q750 370 1000 320 L1000 700 L0 700 Z" fill="#eef4fb"/>
+      <path d="M0 440 Q300 400 640 445 Q840 465 1000 435 L1000 700 L0 700 Z" fill="#f7fafd"/>
+      <path d="M0 560 Q350 525 1000 560 L1000 700 L0 700 Z" fill="#ffffff"/>
+      <path d="M60 330 Q100 340 140 330 M760 350 Q820 362 880 350" fill="none" stroke="#d8e4f2" stroke-width="5" stroke-linecap="round"/>`;
+  },
+  halloween: (rng) => {
+    const stars = [];
+    const n = 14 + Math.floor(rng() * 8);
+    for (let i = 0; i < n; i++) {
+      const x = 15 + rng() * 970, y = 15 + rng() * 300, r = 1.5 + rng() * 2;
+      stars.push(`<circle cx="${x}" cy="${y}" r="${r}" fill="#f5e9c9" opacity="${0.5 + rng() * 0.5}"/>`);
+    }
+    const posts = [];
+    for (let x = 40; x <= 960; x += 110) {
+      posts.push(`<path d="M${x} 402 L${x} 470" stroke="#3f3654" stroke-width="9" stroke-linecap="round"/>`);
+    }
+    return `
+      <rect x="0" y="0" width="1000" height="700" fill="#584a75"/>
+      <rect x="0" y="0" width="1000" height="330" fill="#4c3f66"/>
+      ${stars.join('')}
+      <path d="M0 400 Q250 370 500 400 Q750 430 1000 395 L1000 700 L0 700 Z" fill="#6e5f8c"/>
+      ${posts.join('')}
+      <path d="M0 424 L1000 424" stroke="#3f3654" stroke-width="8"/>
+      <path d="M0 500 Q300 470 640 502 Q840 520 1000 495 L1000 700 L0 700 Z" fill="#7d6da0"/>
+      <path d="M0 610 Q350 580 1000 612 L1000 700 L0 700 Z" fill="#8b7bb0"/>`;
+  },
 };
 
 /* ============================== EXPORT ============================== */
@@ -610,6 +903,10 @@ export const THEMES = {
             zones: { water: [0.08, 0.86] } },
   farm:   { id: 'farm', label: 'Farm', emoji: '🐮', objects: farmObjects, background: backgrounds.farm,
             zones: { ground: [0.50, 0.94], air: [0.08, 0.30] } },
+  christmas: { id: 'christmas', label: 'Christmas', emoji: '🎄', objects: christmasObjects, background: backgrounds.christmas,
+            zones: { ground: [0.48, 0.94], air: [0.08, 0.34] } },
+  halloween: { id: 'halloween', label: 'Halloween', emoji: '🎃', objects: halloweenObjects, background: backgrounds.halloween,
+            zones: { ground: [0.60, 0.94], air: [0.06, 0.42] } },
 };
 
 export { shade };

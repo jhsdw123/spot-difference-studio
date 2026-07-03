@@ -109,6 +109,7 @@ input[type="number"], input[type="text"], select {
 .toggle input { accent-color: var(--accent); width: 17px; height: 17px; }
 .pv-imgs { display: grid; gap: 12px; }
 .pv-imgs.side { grid-template-columns: 1fr 1fr; }
+@media (max-width: 700px) { .pv-imgs.side { grid-template-columns: 1fr; } }
 .pv-imgs .frame { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: #fff; }
 .pv-imgs .frame svg { display: block; width: 100%; height: auto; }
 .pv-label { font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin: 2px 0 4px; }
