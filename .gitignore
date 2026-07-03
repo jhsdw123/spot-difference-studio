@@ -3,3 +3,5 @@ tools/samples/
 tools/shots/
 tools/package-lock.json
 *.log
+tools/bin/
+tools/kdp-hd/
