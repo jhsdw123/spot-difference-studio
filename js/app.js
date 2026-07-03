@@ -17,6 +17,7 @@ const state = {
   diffCount: DIFF_DEFAULTS.medium,
   pageFormat: 'a4',
   layout: 'side',
+  bw: false,
   seed: null,
   puzzle: null,
   showAnswers: false,
@@ -64,6 +65,7 @@ function regenerate(freshSeed = true) {
     difficulty: state.difficulty,
     diffCount: state.diffCount,
     seed: state.seed,
+    bw: state.bw,
   });
   $('#seed-input').value = state.seed;
   renderPreview();
@@ -126,6 +128,11 @@ function bind() {
 
   $('#btn-generate').addEventListener('click', () => regenerate(true));
 
+  $('#bw-toggle').addEventListener('change', (e) => {
+    state.bw = e.target.checked;
+    regenerate(false);
+  });
+
   $('#answers-toggle').addEventListener('change', (e) => {
     state.showAnswers = e.target.checked;
     renderPreview();
@@ -156,6 +163,7 @@ function bind() {
           difficulty: state.difficulty,
           diffCount: state.diffCount,
           seed: newSeed(),
+          bw: state.bw,
         }));
       }
       await exportPdf(puzzles, {

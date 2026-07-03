@@ -165,7 +165,7 @@ function renderScene(bg, instances, answers) {
   let overlay = '';
   if (answers && answers.length) {
     overlay = answers.map(a => `
-      <circle cx="${a.cx.toFixed(1)}" cy="${a.cy.toFixed(1)}" r="${a.r.toFixed(1)}"
+      <circle data-ans="1" cx="${a.cx.toFixed(1)}" cy="${a.cy.toFixed(1)}" r="${a.r.toFixed(1)}"
         fill="none" stroke="#e8262d" stroke-width="7" stroke-dasharray="16 10" opacity="0.95"/>`).join('');
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}">
@@ -177,12 +177,30 @@ ${overlay}
 </svg>`;
 }
 
+/* ---------- ink-saver (black & white) ---------- */
+
+// Quantize every color in the SVG to a printable gray. Dark outlines stay dark,
+// so the line art survives; color-based differences are excluded upstream.
+function toGrayscale(svg) {
+  return svg.replace(/#([0-9a-fA-F]{6})\b/g, (m, hex) => {
+    const n = parseInt(hex, 16);
+    const L = 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+    if (L >= 235) return '#ffffff';
+    if (L >= 185) return '#efefef';
+    if (L >= 135) return '#d8d8d8';
+    if (L >= 88) return '#bdbdbd';
+    if (L >= 55) return '#9a9a9a';
+    return '#2d2a26';
+  });
+}
+
 /* ---------- public API ---------- */
 
-export function generatePuzzle({ themeId = 'garden', difficulty = 'medium', diffCount, seed }) {
+export function generatePuzzle({ themeId = 'garden', difficulty = 'medium', diffCount, seed, bw = false }) {
   const theme = THEMES[themeId];
   if (!theme) throw new Error('unknown theme: ' + themeId);
-  const cfg = DIFFICULTY[difficulty] || DIFFICULTY.medium;
+  let cfg = DIFFICULTY[difficulty] || DIFFICULTY.medium;
+  if (bw) cfg = { ...cfg, mutations: cfg.mutations.filter(m => m !== 'recolor') };
   const target = diffCount || DIFF_DEFAULTS[difficulty] || 8;
   if (seed == null) seed = Math.floor(Math.random() * 900000) + 100000;
   const rng = mulberry32(seed);
@@ -205,13 +223,22 @@ export function generatePuzzle({ themeId = 'garden', difficulty = 'medium', diff
     diffs.push({ kind: m.kind, object: a.type.id });
   }
 
+  let svgA = renderScene(bg, placed, null);
+  let svgB = renderScene(bg, instB, null);
+  let svgAnswer = renderScene(bg, instB, answers);
+  if (bw) {
+    // grayscale the artwork but keep the answer circles red (they read fine in print)
+    svgA = toGrayscale(svgA);
+    svgB = toGrayscale(svgB);
+    svgAnswer = toGrayscale(svgAnswer)
+      .replace(/(<circle data-ans="1"[^>]*stroke=")#[0-9a-fA-F]{6}(")/g, '$1#e8262d$2');
+  }
+
   return {
-    seed, themeId, difficulty,
+    seed, themeId, difficulty, bw,
     count: mutations.length,
     diffs,
-    svgA: renderScene(bg, placed, null),
-    svgB: renderScene(bg, instB, null),
-    svgAnswer: renderScene(bg, instB, answers),
+    svgA, svgB, svgAnswer,
   };
 }
 
