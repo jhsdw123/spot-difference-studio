@@ -131,19 +131,20 @@ if (MODE === 'cg') {
   await sleep(300);
   let cls = await page.$eval('#btn-hint', e => e.className);
   if (!cls.includes('ad')) finding(`cg: hint button not in AD state after free hint (class="${cls}")`);
+  // let the free hint's 3·2·1 + strobe sequence finish first
+  await page.waitForFunction(() => window.__sh.state.round && !window.__sh.state.round._hinting, { timeout: 10000 });
   await page.tap('#btn-hint');
   await page.waitForFunction(() => window.__ads.rewarded === 1, { timeout: 6000 })
     .then(() => ok('cg: rewarded ad requested'))
     .catch(() => finding('cg: rewarded ad not requested'));
-  await sleep(1200);
-  const hintState = await page.evaluate(() => ({
-    hintsUsed: window.__sh.state.round?.hintsUsed,
-    running: window.__sh.state.round?.running,
-    cls: document.querySelector('#btn-hint').className,
-  }));
-  if (hintState.hintsUsed !== 1) finding(`cg: rewarded hint not granted (hintsUsed=${hintState.hintsUsed})`);
+  // granted = a second hint sequence actually starts playing
+  const granted = await page.waitForFunction(() => window.__sh.state.round?._hinting === true, { timeout: 8000 })
+    .then(() => true).catch(() => false);
+  if (!granted) finding('cg: rewarded hint not granted');
   else ok('cg: rewarded hint granted and consumed');
-  if (!hintState.cls.includes('ad')) finding('cg: hint button should offer another ad after reward');
+  const clsAfter = await page.$eval('#btn-hint', e => e.className);
+  if (!clsAfter.includes('ad')) finding('cg: hint button should offer another ad after reward');
+  await page.waitForFunction(() => !window.__sh.state.round._hinting, { timeout: 10000 });
 
   // wind the clock: gate open -> midgame on next natural break
   await winLevel();
@@ -175,13 +176,14 @@ if (MODE === 'gd') {
 
   await page.tap('#btn-hint');
   await sleep(300);
+  await page.waitForFunction(() => window.__sh.state.round && !window.__sh.state.round._hinting, { timeout: 10000 });
   await page.tap('#btn-hint');
   await page.waitForFunction(() => window.__ads.rewarded === 1, { timeout: 6000 })
     .then(() => ok('gd: rewarded ad flow works'))
     .catch(() => finding('gd: rewarded ad not requested'));
-  await sleep(900);
-  const hu = await page.evaluate(() => window.__sh.state.round?.hintsUsed);
-  if (hu !== 1) finding(`gd: rewarded hint not granted (hintsUsed=${hu})`);
+  const gdGranted = await page.waitForFunction(() => window.__sh.state.round?._hinting === true, { timeout: 8000 })
+    .then(() => true).catch(() => false);
+  if (!gdGranted) finding('gd: rewarded hint not granted');
   else ok('gd: rewarded hint granted');
 }
 

@@ -46,46 +46,123 @@ await tourNext();
 await waitTour('first puzzle').catch(async () => finding('tour step 3 missing: "' + await tourText() + '"'));
 await tourNext(); // ▶ Start tutorial
 
-/* ---------- guided round ---------- */
-await waitTour('differences', 45000).then(() => ok('tutorial intro bubble appears'))
-  .catch(() => finding('tutorial intro bubble missing'));
-let paused = await page.evaluate(() => window.__sh.state.round && !window.__sh.state.round.running);
-if (!paused) finding('round not paused during intro bubble'); else ok('timer paused during bubble');
-await page.screenshot({ path: 'audit/tour-round-intro.png' });
-await tourNext();
-await page.waitForFunction(() => window.__sh.state.round?.running, { timeout: 5000 });
-ok('round resumes after intro');
+/* ---------- guided round (fixed pair, answer-demo masks) ---------- */
+await page.waitForFunction(() => window.__sh.state.round?.running, { timeout: 45000 });
+const pid = await page.evaluate(() => window.__sh.state.puzzle.id);
+if (pid !== 'toon_mr4pj0f6_0') finding(`tutorial uses random pair ${pid}, expected fixed toon_mr4pj0f6_0`);
+else ok('tutorial uses the fixed clean pair');
 
-const regions = await page.evaluate(() => window.__sh.state.puzzle.regions.map(r => ({ x: r.x, y: r.y })));
+await page.waitForSelector('.tut-mask', { timeout: 8000 }).then(() => ok('answer demo: mask + ring shown'))
+  .catch(() => finding('answer demo mask missing'));
+const tl1 = await page.evaluate(() => window.__sh.state.round.timeLeft);
+await sleep(1300);
+const tl2 = await page.evaluate(() => window.__sh.state.round.timeLeft);
+if (tl1 - tl2 > 0.2) finding(`clock not frozen during demo (${tl1.toFixed(1)} -> ${tl2.toFixed(1)})`);
+else ok('clock frozen during answer demo');
+await page.screenshot({ path: 'audit/tour-demo1.png' });
+
 const box = await page.$eval('#panel-a', el => { const r = el.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width }; });
-const tapRegion = async (i) => { await page.touchscreen.tap(box.x + regions[i].x / 100 * box.w, box.y + regions[i].y / 100 * box.w); await sleep(350); };
+const tapRing = async () => {
+  const c = await page.evaluate(() => {
+    const ring = document.querySelector('.tut-mask .tut-ring');
+    return ring ? { x: +ring.getAttribute('cx'), y: +ring.getAttribute('cy') } : null;
+  });
+  if (!c) return false;
+  await page.touchscreen.tap(box.x + c.x / 100 * box.w, box.y + c.y / 100 * box.w);
+  await sleep(400);
+  return true;
+};
 
-await tapRegion(0);
-await waitTour('+4s').then(() => ok('first-find bubble (+4s/−6s) appears'))
-  .catch(() => finding('first-find bubble missing'));
+await tapRing(); // demo answer 1
+let found = await page.evaluate(() => window.__sh.state.round.found.size);
+if (found !== 1) finding(`demo tap 1 did not register (found=${found})`);
+const burst = await page.evaluate(() => !!document.querySelector('.burst'));
+if (!burst) finding('no star burst on a correct tap'); else ok('correct tap fires star burst');
+await tapRing(); // demo answer 2
+found = await page.evaluate(() => window.__sh.state.round.found.size);
+if (found !== 2) finding(`demo tap 2 did not register (found=${found})`);
+else ok('both demo answers tappable via rings');
+
+// progress-UI spotlight
+await waitTour('progress').then(() => ok('progress-UI spotlight appears after 2 finds'))
+  .catch(() => finding('progress-UI spotlight missing'));
+await page.screenshot({ path: 'audit/tour-progress.png' });
 await tourNext();
 
-for (let i = 1; i < regions.length - 1; i++) await tapRegion(i);
-await waitTour('💡').then(() => ok('hint bubble appears at one-left'))
-  .catch(() => finding('hint bubble missing at one-left'));
+// free play: clock resumes, masks gone
+const maskGone = await page.evaluate(() => !document.querySelector('.tut-mask'));
+if (!maskGone) finding('mask still up in free play');
+const tlA = await page.evaluate(() => window.__sh.state.round.timeLeft);
+await sleep(1100);
+const tlB = await page.evaluate(() => window.__sh.state.round.timeLeft);
+if (!(tlA - tlB > 0.4)) finding(`clock did not resume in free play (${tlA.toFixed(1)} -> ${tlB.toFixed(1)})`);
+else ok('clock resumes for free play');
+
+// deliberate miss: X should shake + −6s penalty
+const missPt = await page.evaluate(() => {
+  const rs = window.__sh.state.round.puzzle.regions;
+  let best = null, bd = -1;
+  for (let x = 4; x <= 96; x += 4) for (let y = 4; y <= 96; y += 4) {
+    const d = Math.min(...rs.map(r => Math.hypot(r.x - x, r.y - y)));
+    if (d > bd) { bd = d; best = { x, y }; }
+  }
+  return best;
+});
+const tlBeforeMiss = await page.evaluate(() => window.__sh.state.round.timeLeft);
+await page.touchscreen.tap(box.x + missPt.x / 100 * box.w, box.y + missPt.y / 100 * box.w);
+await sleep(200);
+const miss = await page.evaluate(() => ({
+  x: !!document.querySelector('.miss-x'),
+  tl: window.__sh.state.round.timeLeft,
+}));
+if (!miss.x) finding('no shaking X on a wrong tap');
+else if (tlBeforeMiss - miss.tl < 5) finding('miss penalty not applied');
+else ok('wrong tap: shaking X + −6s');
+await sleep(500);
+
+// find 3rd and 4th -> hint lesson at one-left
+const tapUnfound = async () => {
+  const c = await page.evaluate(() => {
+    const r = window.__sh.state.round;
+    const i = r.puzzle.regions.findIndex((_, k) => !r.found.has(k));
+    return r.puzzle.regions[i];
+  });
+  await page.touchscreen.tap(box.x + c.x / 100 * box.w, box.y + c.y / 100 * box.w);
+  await sleep(400);
+};
+await tapUnfound();
+await tapUnfound();
+await waitTour('A·B').then(() => ok('hint lesson appears at one-left'))
+  .catch(() => finding('hint lesson missing at one-left'));
 await page.screenshot({ path: 'audit/tour-hint-bubble.png' });
 await tourNext();
 
-// blink hint: strobes the opposite image, once per game
+// new hint flow: freeze -> 3·2·1 -> 1.5s A/B strobe
 await page.tap('#btn-hint');
-const blinked = await page.waitForFunction(() => document.querySelector('.blink-img.on'), { timeout: 3000 }).then(() => true).catch(() => false);
-if (!blinked) finding('blink hint overlay did not strobe'); else ok('blink hint strobes A/B overlap');
-await page.screenshot({ path: 'audit/hint-blink.png' });
-await sleep(900);
+await page.waitForSelector('.hint-count', { timeout: 3000 }).then(() => ok('hint countdown shows'))
+  .catch(() => finding('hint countdown missing'));
+const ht1 = await page.evaluate(() => window.__sh.state.round.timeLeft);
+await sleep(1000);
+const ht2 = await page.evaluate(() => window.__sh.state.round.timeLeft);
+if (ht1 - ht2 > 0.2) finding('clock not frozen during hint countdown');
+else ok('clock frozen during hint');
+await page.waitForFunction(() => document.querySelector('.blink-img.strobe'), { timeout: 4000 })
+  .then(() => ok('A·B strobe starts after countdown'))
+  .catch(() => finding('strobe never started'));
+await page.screenshot({ path: 'audit/hint-strobe.png' });
+await sleep(2000);
 const hint = await page.evaluate(() => ({
-  gone: !document.querySelector('.blink-img.on'),
+  strobing: !!document.querySelector('.blink-img.strobe'),
+  counting: !!document.querySelector('.hint-count'),
   used: window.__sh.state.round.hintsUsed,
+  frozen: window.__sh.state.round.frozen,
   cls: document.querySelector('#btn-hint').className,
 }));
-if (!hint.gone) finding('blink overlay stuck on');
+if (hint.strobing || hint.counting) finding('hint visuals stuck on');
+if (hint.frozen) finding('clock still frozen after hint');
 if (hint.used !== 1) finding(`hintsUsed=${hint.used} after hint`);
 if (!hint.cls.includes('used')) finding(`hint button not disabled after use (class="${hint.cls}")`);
-else ok('hint is once-per-game (button disabled after use)');
+else ok('hint is once-per-game and cleans up');
 
 // progress pill visibility
 const pill = await page.evaluate(() => {
@@ -96,7 +173,16 @@ const pill = await page.evaluate(() => {
 if (!pill.big) finding(`found-progress count not prominent: ${pill.html}`);
 else ok('found-progress pill renders big count');
 
-await tapRegion(regions.length - 1);
+await tapUnfound(); // last one
+const win = await page.evaluate(() => ({
+  banner: !!document.querySelector('.congrats-banner'),
+  confetti: !!document.querySelector('canvas'),
+  bursts: document.querySelectorAll('.burst').length,
+}));
+if (!win.banner) finding('Congratulations banner missing on completion');
+if (!win.confetti) finding('confetti rain missing on completion');
+else ok(`completion: banner + confetti + ${win.bursts} answer bursts`);
+await page.screenshot({ path: 'audit/win-celebration.png' });
 await page.waitForFunction(() => document.querySelector('#result').classList.contains('on'), { timeout: 8000 });
 ok('tutorial puzzle completed -> win screen');
 const flag = await page.evaluate(() => localStorage.getItem('sh_tour'));
