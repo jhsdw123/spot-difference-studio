@@ -56,6 +56,8 @@ await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true
 
 if (MODE === 'cg' || MODE === 'zip') await page.evaluateOnNewDocument(CG_STUB);
 if (MODE === 'gd') await page.evaluateOnNewDocument(GD_STUB);
+// skip the first-run onboarding tour
+await page.evaluateOnNewDocument(() => { try { localStorage.setItem('sh_tour', '1'); } catch {} });
 
 const url = MODE === 'plain' || MODE === 'zip' ? BASE : `${BASE}?portal=${MODE === 'cg' ? 'crazygames' : 'gd'}`;
 await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });

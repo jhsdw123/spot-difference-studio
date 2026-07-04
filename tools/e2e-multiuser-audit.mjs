@@ -24,6 +24,8 @@ async function mkPlayer(name, { width = 390, height = 844 } = {}) {
   page.on('console', m => { if (m.type() === 'error') { events.push(`console: ${m.text()}`); console.log(`[${name}] console.error:`, m.text().slice(0, 200)); } });
   page.on('dialog', async d => { events.push(`dialog: ${d.message()}`); console.log(`[${name}] DIALOG:`, d.message()); await d.accept(); });
   await page.setViewport({ width, height, isMobile: true, hasTouch: true });
+  // skip the first-run onboarding tour — these scenarios drive the UI directly
+  await page.evaluateOnNewDocument(() => { try { localStorage.setItem('sh_tour', '1'); } catch {} });
   await page.goto(URL, { waitUntil: 'networkidle0', timeout: 60000 });
   await page.waitForFunction(() => window.__sh?.state.sequence.length > 0, { timeout: 30000 });
   return { name, ctx, page, events };
