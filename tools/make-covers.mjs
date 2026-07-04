@@ -110,9 +110,12 @@ async function cover(w, h, file) {
   const half = Math.floor(w / 2);
   const gap = Math.max(4, Math.round(w / 320));
   const [pa, pb] = await Promise.all([panel(a, half - gap, h), panel(b, half - gap, h)]);
-  const logoSize = Math.round(h * 0.30);
-  const title = Math.round(h * 0.148);
-  const tag = Math.round(h * 0.052);
+  // small covers: shrink the mice and title so they never collide
+  const small = w < 700;
+  const logoSize = Math.round(h * (small ? 0.24 : 0.30));
+  const title = Math.round(h * (small ? 0.105 : 0.148));
+  const tag = Math.round(h * (small ? 0.048 : 0.052));
+  const mouseH = Math.round(h * (small ? 0.30 : 0.42));
   await sharp({ create: { width: w, height: h, channels: 4, background: '#101223' } })
     .composite([
       { input: pa, left: 0, top: 0 },
@@ -121,7 +124,20 @@ async function cover(w, h, file) {
       await circleLayer(half - gap, h, half + gap, 0),
       { input: await sharp(textSvg(w, h, 'Spot Hunt', 'Find the differences — beat the clock!', title, tag)).png().toBuffer(), left: 0, top: 0 },
       { input: await sharp(logoSvg(logoSize)).png().toBuffer(), left: Math.round(w / 2 - logoSize / 2), top: Math.round(h * 0.06) },
-      ...await miceLayers(w, h, Math.round(h * 0.42), h - Math.round(h * 0.035)),
+      ...await miceLayers(w, h, mouseH, h - Math.round(h * 0.035)),
+    ])
+    .png()
+    .toFile(join(OUT, file));
+  console.log('made', file);
+}
+
+// tiny catalog thumb: single panel + wordmark only (mice/circles unreadable this small)
+async function thumb(w, h, file) {
+  const title = Math.round(h * 0.30);
+  await sharp(a)
+    .resize(w, h, { fit: 'cover', position: 'top' })
+    .composite([
+      { input: await sharp(textSvg(w, h, 'Spot Hunt', '', title, Math.round(h * 0.01))).png().toBuffer(), left: 0, top: 0 },
     ])
     .png()
     .toFile(join(OUT, file));
@@ -211,4 +227,5 @@ await cover(512, 384, 'cover-512x384.png');
 await square(512, 'cover-512x512.png');
 await square(800, 'cover-800x800.png');
 await portrait(800, 1200, 'cover-800x1200.png');
+await thumb(200, 120, 'cover-200x120.png');
 console.log('covers ->', OUT);
