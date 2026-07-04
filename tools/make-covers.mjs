@@ -128,8 +128,41 @@ async function cover(w, h, file) {
   console.log('made', file);
 }
 
+// big wordmark on a dark band across the A/B seam (portrait: nothing collides there)
+const midTitleSvg = (w, h, titlePx, tagPx) => {
+  const bandH = titlePx + tagPx * 3.4;
+  const cy = h / 2;
+  return Buffer.from(`
+<svg width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="rgba(16,18,35,0)"/>
+      <stop offset="0.22" stop-color="rgba(16,18,35,0.9)"/>
+      <stop offset="0.78" stop-color="rgba(16,18,35,0.9)"/>
+      <stop offset="1" stop-color="rgba(16,18,35,0)"/>
+    </linearGradient>
+    <linearGradient id="hot" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ff5a5f"/><stop offset="1" stop-color="#ffb03a"/>
+    </linearGradient>
+    <linearGradient id="footfade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="rgba(16,18,35,0)"/>
+      <stop offset="1" stop-color="rgba(16,18,35,0.85)"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="${cy - bandH / 2}" width="${w}" height="${bandH}" fill="url(#band)"/>
+  <rect x="0" y="${h * 0.8}" width="${w}" height="${h * 0.2}" fill="url(#footfade)"/>
+  <text x="50%" y="${cy + titlePx * 0.18}" text-anchor="middle"
+    font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="${titlePx}"
+    fill="#ffffff" stroke="#101223" stroke-width="${Math.max(2, titlePx / 22)}" paint-order="stroke"
+    letter-spacing="1">Spot<tspan dx="0.28em" fill="url(#hot)">Hunt</tspan></text>
+  <text x="50%" y="${cy + titlePx * 0.62 + tagPx}" text-anchor="middle"
+    font-family="Arial, sans-serif" font-weight="700" font-size="${tagPx}"
+    fill="#e8eaf6">Find the differences!</text>
+</svg>`);
+};
+
 // square + portrait: A on top, B below — instantly reads as spot-the-difference
-async function stacked(w, h, file, { title, tag, mouseH, mouseBottom }) {
+async function stacked(w, h, file, { title, tag, mouseH, mouseBottom, titlePos = 'bottom' }) {
   const gap = Math.max(4, Math.round(h / 160));
   const panelH = Math.floor((h - gap) / 2);
   // top-anchored crop keeps the answer-dense upper half of the scene visible
@@ -140,7 +173,12 @@ async function stacked(w, h, file, { title, tag, mouseH, mouseBottom }) {
       { input: pb, left: 0, top: panelH + gap },
       await circleLayer(w, panelH, 0, 0, 'top'),
       await circleLayer(w, panelH, 0, panelH + gap, 'top'),
-      { input: await sharp(textSvg(w, h, 'Spot Hunt', 'Find the differences!', title, tag)).png().toBuffer(), left: 0, top: 0 },
+      {
+        input: await sharp(titlePos === 'middle'
+          ? midTitleSvg(w, h, title, tag)
+          : textSvg(w, h, 'Spot Hunt', 'Find the differences!', title, tag)).png().toBuffer(),
+        left: 0, top: 0,
+      },
       ...await miceLayers(w, h, mouseH, mouseBottom),
     ])
     .png()
@@ -159,10 +197,11 @@ async function square(size, file) {
 
 async function portrait(w, h, file) {
   await stacked(w, h, file, {
-    title: Math.round(w * 0.092),
-    tag: Math.round(w * 0.042),
+    title: Math.round(w * 0.15),
+    tag: Math.round(w * 0.05),
     mouseH: Math.round(h * 0.17),
     mouseBottom: h - Math.round(h * 0.01),
+    titlePos: 'middle',
   });
 }
 
