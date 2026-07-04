@@ -9,7 +9,7 @@ const CONFIG = {
   siteUrl: /localhost|127\.0\.0\.1/.test(location.hostname) ? 'spotdifferencestudio.com' : location.host,
   gumroadUrl: 'https://gumroad.com/l/REPLACE_ME', // Pro product URL (set after creating the Gumroad product)
   gumroadProductId: '',                            // optional: enables online license verification
-  youtubeUrl: '',                                  // Spot Hunt channel URL for cross-promotion
+  youtubeUrl: 'https://www.youtube.com/@SpotHunt', // Spot Hunt channel URL for cross-promotion
 };
 
 const state = {
