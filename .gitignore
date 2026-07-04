@@ -7,3 +7,4 @@ tools/bin/
 tools/kdp-hd/
 tools/*.pdf
 tools/*.png
+tools/audit/
