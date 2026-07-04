@@ -10,8 +10,8 @@ const finding = t => { findings.push(t); console.log('FINDING:', t); };
 const ok = t => console.log('OK:', t);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-const CG_STUB = () => {
-  window.__ads = { midgame: 0, rewarded: 0, events: [] };
+const CG_STUB = (opts = {}) => {
+  window.__ads = { midgame: 0, rewarded: 0, events: [], invites: [], hides: 0 };
   window.CrazyGames = {
     SDK: {
       environment: 'local',
@@ -22,6 +22,14 @@ const CG_STUB = () => {
         gameplayStart: () => window.__ads.events.push('gameplayStart'),
         gameplayStop: () => window.__ads.events.push('gameplayStop'),
         happytime: () => window.__ads.events.push('happytime'),
+        isInstantMultiplayer: !!opts.instant,
+        getInviteParam: (k) => (opts.invite && opts.invite[k]) || null,
+        inviteLink: (p) => 'https://crazygames.com/invite?' + new URLSearchParams(p),
+        showInviteButton: (p) => { window.__ads.invites.push(p); return 'link'; },
+        hideInviteButton: () => { window.__ads.hides++; },
+      },
+      user: {
+        getUser: async () => opts.user || null,
       },
       ad: {
         requestAd: (type, cb) => {
@@ -49,12 +57,66 @@ const GD_STUB = () => {
 };
 
 const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+
+/* ---- mp: CrazyGames party flows (instant multiplayer, invite link, chat filter) ---- */
+if (MODE === 'mp') {
+  const mk = async (stubOpts, name) => {
+    const ctx = await browser.createBrowserContext();
+    const p = await ctx.newPage();
+    p.on('pageerror', e => finding(`${name} pageerror: ` + e.message));
+    await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+    await p.evaluateOnNewDocument(CG_STUB, stubOpts);
+    return p;
+  };
+
+  const host = await mk({ instant: true, user: { username: 'CGHero' } }, 'host');
+  await host.goto(`${BASE}?portal=crazygames`, { waitUntil: 'networkidle0', timeout: 60000 });
+  await host.waitForFunction(() => /^[A-Z0-9]{4}$/.test(document.querySelector('#vs-code-big')?.textContent || ''), { timeout: 30000 })
+    .then(() => ok('instant multiplayer: boots straight into a hosted, joinable lobby'))
+    .catch(() => finding('instant multiplayer did not land in a host lobby'));
+  const code = await host.evaluate(() => document.querySelector('#vs-code-big').textContent);
+  const hostName = await host.evaluate(() => window.__sh.versus.__vs().myName);
+  if (hostName !== 'CGHero') finding(`CG username not used as nickname (got "${hostName}")`);
+  else ok('CG username prefilled as nickname');
+  const inv = await host.evaluate(() => window.__ads.invites);
+  if (!inv.length || inv[inv.length - 1].room !== code) finding(`invite button missing/wrong room: ${JSON.stringify(inv)}`);
+  else ok('invite button shown with the room code param');
+
+  const guest = await mk({ invite: { room: code }, user: { username: 'BuddyCG' } }, 'guest');
+  await guest.goto(`${BASE}?portal=crazygames`, { waitUntil: 'networkidle0', timeout: 60000 });
+  await guest.waitForFunction(() => document.querySelector('[data-step="guest"]')?.classList.contains('on'), { timeout: 30000 })
+    .then(() => ok('invite param: guest lands directly in the friend\'s lobby'))
+    .catch(() => finding('guest did not auto-join from the invite param'));
+  await host.waitForFunction(() => document.querySelector('.vs-player-count')?.textContent.includes('2/8'), { timeout: 15000 })
+    .then(() => ok('lobby shows 2/8'))
+    .catch(() => finding('host lobby never showed 2/8'));
+
+  // profanity filter, over the wire
+  await guest.type('#chat-input-lobby', 'fuck this shit');
+  await guest.tap('#chat-send-lobby');
+  await host.waitForFunction(() => document.querySelector('#chat-msgs-lobby')?.textContent.includes('**** this ****'), { timeout: 10000 })
+    .then(() => ok('chat profanity filtered on both ends'))
+    .catch(async () => finding('profanity NOT filtered: "' +
+      await host.evaluate(() => document.querySelector('#chat-msgs-lobby')?.textContent.slice(-60)) + '"'));
+
+  await host.tap('#vs-start');
+  await host.waitForFunction(() => window.__sh.versus.__vs().round?.running, { timeout: 60000 });
+  const hides = await host.evaluate(() => window.__ads.hides);
+  if (hides < 1) finding('invite button not hidden when the round started');
+  else ok('invite button hidden at round start');
+
+  console.log(`\n=== portal:mp summary: ${findings.length} finding(s) ===`);
+  findings.forEach((f, i) => console.log(`${i + 1}. ${f}`));
+  await browser.close();
+  process.exit(findings.length ? 1 : 0);
+}
+
 const page = await browser.newPage();
 page.on('pageerror', e => finding('pageerror: ' + e.message));
 page.on('console', m => { if (m.type() === 'error') finding('console: ' + m.text().slice(0, 150)); });
 await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
 
-if (MODE === 'cg' || MODE === 'zip') await page.evaluateOnNewDocument(CG_STUB);
+if (MODE === 'cg' || MODE === 'zip') await page.evaluateOnNewDocument(CG_STUB, {});
 if (MODE === 'gd') await page.evaluateOnNewDocument(GD_STUB);
 // skip the first-run onboarding tour
 await page.evaluateOnNewDocument(() => { try { localStorage.setItem('sh_tour', '1'); } catch {} });

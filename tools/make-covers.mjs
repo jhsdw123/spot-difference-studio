@@ -83,9 +83,25 @@ async function square(size, file) {
   console.log('made', file);
 }
 
+async function portrait(w, h, file) {
+  const logoSize = Math.round(w * 0.34);
+  const title = Math.round(w * 0.15);
+  const tag = Math.round(w * 0.052);
+  await sharp(a)
+    .resize(w, h, { fit: 'cover' })
+    .composite([
+      { input: await sharp(textSvg(w, h, 'Spot Hunt', 'Find the differences!', title, tag)).png().toBuffer(), left: 0, top: 0 },
+      { input: await sharp(logoSvg(logoSize)).png().toBuffer(), left: Math.round(w / 2 - logoSize / 2), top: Math.round(h * 0.07) },
+    ])
+    .png()
+    .toFile(join(OUT, file));
+  console.log('made', file);
+}
+
 await cover(1920, 1080, 'cover-1920x1080.png');
 await cover(1280, 720, 'cover-1280x720.png');
 await cover(512, 384, 'cover-512x384.png');
 await square(512, 'cover-512x512.png');
 await square(800, 'cover-800x800.png');
+await portrait(800, 1200, 'cover-800x1200.png');
 console.log('covers ->', OUT);
