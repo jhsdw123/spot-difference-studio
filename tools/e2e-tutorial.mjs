@@ -49,8 +49,8 @@ await tourNext(); // ▶ Start tutorial
 /* ---------- guided round (fixed pair, answer-demo masks) ---------- */
 await page.waitForFunction(() => window.__sh.state.round?.running, { timeout: 45000 });
 const pid = await page.evaluate(() => window.__sh.state.puzzle.id);
-if (pid !== 'toon_mr4pj0f6_0') finding(`tutorial uses random pair ${pid}, expected fixed toon_mr4pj0f6_0`);
-else ok('tutorial uses the fixed clean pair');
+if (pid !== 'sd_mr4rwrru_loz3') finding(`tutorial uses random pair ${pid}, expected fixed sd_mr4rwrru_loz3`);
+else ok('tutorial uses the fixed hand-verified pair');
 
 await page.waitForSelector('.tut-mask', { timeout: 8000 }).then(() => ok('answer demo: mask + ring shown'))
   .catch(() => finding('answer demo mask missing'));
