@@ -133,7 +133,7 @@ async function cover(w, h, file) {
 
 // tiny catalog thumb: single panel + wordmark only (mice/circles unreadable this small)
 async function thumb(w, h, file) {
-  const title = Math.round(h * 0.30);
+  const title = Math.round(w * 0.135); // width-bound so "Spot Hunt" never clips
   await sharp(a)
     .resize(w, h, { fit: 'cover', position: 'top' })
     .composite([
@@ -223,6 +223,7 @@ async function portrait(w, h, file) {
 
 await cover(1920, 1080, 'cover-1920x1080.png');
 await cover(1280, 720, 'cover-1280x720.png');
+await cover(1280, 550, 'cover-1280x550.png');
 await cover(512, 384, 'cover-512x384.png');
 await square(512, 'cover-512x512.png');
 await square(800, 'cover-800x800.png');
