@@ -49,6 +49,33 @@ async function panel(src, w, h) {
   return sharp(src).resize(w, h, { fit: 'cover', position: 'centre' }).toBuffer();
 }
 
+// dueling mascot mice (from tools/assets-src, prepped by prep-mice.mjs)
+const MICE = resolve(import.meta.dirname, 'assets-src');
+
+async function mouse(side, height) {
+  const buf = await sharp(join(MICE, `mouse-${side}.png`)).resize({ height }).png().toBuffer();
+  const meta = await sharp(buf).metadata();
+  const { data: px, info } = await sharp(buf).raw().toBuffer({ resolveWithObject: true });
+  for (let p = 0; p < info.width * info.height; p++) {
+    px[p * 4] = 8; px[p * 4 + 1] = 9; px[p * 4 + 2] = 20;
+    px[p * 4 + 3] = Math.round(px[p * 4 + 3] * 0.45);
+  }
+  const shadow = await sharp(px, { raw: info }).blur(7).png().toBuffer();
+  return { buf, shadow, w: meta.width, h: meta.height };
+}
+
+// left mouse peers in from the bottom-left, right mouse from the bottom-right
+async function miceLayers(w, h, mouseH, bottomY) {
+  const [L, R] = await Promise.all([mouse('left', mouseH), mouse('right', mouseH)]);
+  const pad = Math.round(w * 0.012);
+  return [
+    { input: L.shadow, left: pad + 10, top: bottomY - L.h + 14 },
+    { input: L.buf, left: pad, top: bottomY - L.h },
+    { input: R.shadow, left: w - R.w - pad + 10, top: bottomY - R.h + 14 },
+    { input: R.buf, left: w - R.w - pad, top: bottomY - R.h },
+  ];
+}
+
 async function cover(w, h, file) {
   const half = Math.floor(w / 2);
   const gap = Math.max(4, Math.round(w / 320));
@@ -62,6 +89,7 @@ async function cover(w, h, file) {
       { input: pb, left: half + gap, top: 0 },
       { input: await sharp(textSvg(w, h, 'Spot Hunt', 'Find the differences — beat the clock!', title, tag)).png().toBuffer(), left: 0, top: 0 },
       { input: await sharp(logoSvg(logoSize)).png().toBuffer(), left: Math.round(w / 2 - logoSize / 2), top: Math.round(h * 0.06) },
+      ...await miceLayers(w, h, Math.round(h * 0.42), h - Math.round(h * 0.035)),
     ])
     .png()
     .toFile(join(OUT, file));
@@ -77,6 +105,7 @@ async function square(size, file) {
     .composite([
       { input: await sharp(textSvg(size, size, 'Spot Hunt', 'Find the differences!', title, tag)).png().toBuffer(), left: 0, top: 0 },
       { input: await sharp(logoSvg(logoSize)).png().toBuffer(), left: Math.round(size / 2 - logoSize / 2), top: Math.round(size * 0.07) },
+      ...await miceLayers(size, size, Math.round(size * 0.30), size - Math.round(size * 0.245)),
     ])
     .png()
     .toFile(join(OUT, file));
@@ -92,6 +121,7 @@ async function portrait(w, h, file) {
     .composite([
       { input: await sharp(textSvg(w, h, 'Spot Hunt', 'Find the differences!', title, tag)).png().toBuffer(), left: 0, top: 0 },
       { input: await sharp(logoSvg(logoSize)).png().toBuffer(), left: Math.round(w / 2 - logoSize / 2), top: Math.round(h * 0.07) },
+      ...await miceLayers(w, h, Math.round(h * 0.24), h - Math.round(h * 0.23)),
     ])
     .png()
     .toFile(join(OUT, file));
