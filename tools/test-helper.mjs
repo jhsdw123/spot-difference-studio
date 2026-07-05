@@ -7,6 +7,7 @@ const browser = await puppeteer.launch({ headless: 'new' });
 const page = await browser.newPage();
 const errors = [];
 page.on('pageerror', e => errors.push(String(e)));
+await page.evaluateOnNewDocument(() => { window.open = () => null; }); // block the pinterest auto-open in tests
 await page.goto('file:///' + HELPER.replace(/\\/g, '/'), { waitUntil: 'networkidle0' });
 
 const state = () => page.evaluate(() => ({
