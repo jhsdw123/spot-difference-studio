@@ -205,3 +205,10 @@ body.photo-mode .classic-only { display: none; }
   #print-area svg { width: 100%; height: auto; }
   #print-area .print-foot { font-size: 9pt; color: #777; margin-top: 3mm; }
 }
+
+/* article figures (themed scene illustrations) */
+.article figure.art-fig { margin: 24px 0; }
+.article figure.art-fig img { width: 100%; display: block; border-radius: 14px; border: 1px solid #e0dad0; }
+.article figure.art-fig a { display: block; }
+.article figure.art-fig figcaption { font-size: .85rem; color: #8a8577; margin-top: 8px; text-align: center; line-height: 1.5; }
+.article figure.art-fig figcaption a { color: #0f766e; }

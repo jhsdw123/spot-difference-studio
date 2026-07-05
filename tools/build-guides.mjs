@@ -37,6 +37,8 @@ for (const f of files) {
   const desc = grab(html, /<meta name="description" content="([\s\S]*?)">/);
   const h1 = grab(html, /<h1>([\s\S]*?)<\/h1>/).replace(/<[^>]+>/g, '');
   const url = BASE + 'guides/' + f;
+  const firstImg = grab(html, /<img[^>]+src="\.\.\/([^"]+)"/);
+  const ogImage = firstImg ? BASE + firstImg : OG_IMAGE;
 
   // --- validation ---
   const words = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
@@ -56,9 +58,9 @@ for (const f of files) {
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="${OG_IMAGE}">
+<meta property="og:image" content="${ogImage}">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":${jstr(h1 || title)},"description":${jstr(desc)},"url":${jstr(url)},"image":${jstr(OG_IMAGE)},"author":{"@type":"Organization","name":"Spot the Difference Studio"},"publisher":{"@type":"Organization","name":"Spot the Difference Studio"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":${jstr(h1 || title)},"description":${jstr(desc)},"url":${jstr(url)},"image":${jstr(ogImage)},"author":{"@type":"Organization","name":"Spot the Difference Studio"},"publisher":{"@type":"Organization","name":"Spot the Difference Studio"}}</script>
 <!-- /seo:auto -->`;
   const next = html.includes('<!-- seo:auto -->')
     ? html.replace(/<!-- seo:auto -->[\s\S]*?<!-- \/seo:auto -->/, seoBlock)
