@@ -29,6 +29,18 @@
   .house-ad .had-title { font-weight: 900; font-size: 1.15rem; margin-bottom: 6px; }
   .house-ad p { color: #6b6f8a; font-size: .95rem; margin-bottom: 12px; }
   .house-ad .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .printbtn { font-weight: 800; padding: 9px 18px; border-radius: 999px; border: 2px solid #0f766e; background: #0f766e; color: #fff; cursor: pointer; font-size: .95rem; }
+  .printbtn:hover { filter: brightness(1.08); }
+  .printnote { text-align: center; color: #8a8f9e; font-size: .82rem; margin-top: -2px; }
+  #printsheet { display: none; }
+  @media print {
+    body > *:not(#printsheet) { display: none !important; }
+    #printsheet { display: block; }
+    @page { size: A4 portrait; margin: 8mm; }
+    #printsheet .ps-head { text-align: center; font: 800 13pt Arial, sans-serif; color: #222; margin-bottom: 3mm; }
+    #printsheet img { display: block; width: 128mm; height: 128mm; margin: 0 auto 3mm; }
+    #printsheet .ps-foot { text-align: center; font: 400 8.5pt Arial, sans-serif; color: #777; margin-top: 2mm; }
+  }
 </style>
 </head>
 <body>
@@ -56,7 +68,9 @@
     <div class="toolbar">
       <span class="count" id="count"></span>
       <button class="toggle on" id="toggle">Answers shown — tap to hide</button>
+      <button class="printbtn" id="printbtn">🖨 Print QR-free student copy</button>
     </div>
+    <p class="printnote">Prints just the two big pictures — no QR, no answers, no ads. Great for classrooms &amp; seniors.</p>
     <div class="pairwrap">
       <div class="panel"><span class="tag">A</span><img id="imgA" alt="Spot the difference puzzle — picture A"></div>
       <div class="panel"><span class="tag">B</span><img id="imgB" alt="Spot the difference puzzle — picture B with answers marked">
@@ -79,6 +93,13 @@
   <div class="foot-links"><a href="./#generator">Generator</a><a href="guides/">Guides</a><a href="privacy.html">Privacy</a><a href="mailto:9.dain.9@gmail.com">Contact</a></div>
   <div>© 2026 Spot the Difference Studio</div>
 </footer>
+
+<div id="printsheet">
+  <div class="ps-head" id="ps-head"></div>
+  <img id="ps-a" alt="">
+  <img id="ps-b" alt="">
+  <div class="ps-foot" id="ps-foot"></div>
+</div>
 
 <script>
 (async function () {
@@ -127,6 +148,10 @@
     $('imgA').src = `library/img/${entry.id}_a.webp`;
     $('imgB').src = `library/img/${entry.id}_b.webp`;
     $('count').textContent = `Puzzle #${n} — ${entry.count} differences`;
+    $('ps-head').textContent = `Find ${entry.count} differences`;
+    $('ps-a').src = `library/img/${entry.id}_a.webp`;
+    $('ps-b').src = `library/img/${entry.id}_b.webp`;
+    $('ps-foot').textContent = `Puzzle No. ${n} · Enjoyed it? Subscribe to “Spot Hunt” on YouTube!`;
     drawMarks(entry);
     $('marks').style.display = '';
     const t = $('toggle');
@@ -137,6 +162,7 @@
   }
 
   $('go').addEventListener('click', () => show(parseInt($('num').value, 10)));
+  $('printbtn').addEventListener('click', () => window.print());
   $('num').addEventListener('keydown', e => { if (e.key === 'Enter') show(parseInt($('num').value, 10)); });
   $('toggle').addEventListener('click', () => {
     const t = $('toggle'), m = $('marks');

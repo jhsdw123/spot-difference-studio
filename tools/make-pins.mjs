@@ -120,6 +120,13 @@ const textLayer = (accent, line2raw, count, num) => {
   <text x="${SB_CX}" y="${qY + 368}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700"
     font-size="26" fill="#555b6e">unlimited free puzzles</text>
 
+  <text x="${SB_CX}" y="${qY + 436}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800"
+    font-size="23" fill="#20242c">Teachers &amp; caregivers:</text>
+  <text x="${SB_CX}" y="${qY + 466}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800"
+    font-size="23" fill="#20242c">QR-free student copy</text>
+  <text x="${SB_CX}" y="${qY + 496}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800"
+    font-size="23" fill="#20242c">free at the same link</text>
+
   <text x="50%" y="${H - 52}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700"
     font-size="28" fill="#555b6e">Answer key online &#183; print unlimited puzzles free</text>
   <text x="50%" y="${H - 14}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800"
