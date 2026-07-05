@@ -7,7 +7,7 @@
 // Usage: node make-packs.mjs [slug]   (no arg = all packs)
 import sharp from 'sharp';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -17,6 +17,12 @@ const MANIFEST = JSON.parse(readFileSync(join(ROOT, 'library/manifest.json'), 'u
 const NUMS = JSON.parse(readFileSync(join(ROOT, 'library/pin-numbers.json'), 'utf8'));
 const byNum = {};
 for (const e of MANIFEST) byNum[NUMS[e.id]] = e;
+
+// ---- B&W safety: pairs whose differences are color-only VANISH in grayscale,
+// breaking the B&W puzzle vs. its (color) answer key. bw-check.mjs precomputes
+// which pairs are safe; paid packs must contain ONLY bw-safe pairs. ----
+const BW_PATH = join(ROOT, 'library/bw-safe.json');
+const BW_UNSAFE = new Set(existsSync(BW_PATH) ? JSON.parse(readFileSync(BW_PATH, 'utf8')).unsafe : []);
 
 // ---- IP-risk blocklist: NEVER include in paid products ----
 const BLOCKED = new Set(
@@ -31,28 +37,28 @@ const PACKS = [
   {
     slug: 'ot-visual-perception-vol1', niche: 'ot',
     title: 'Visual Perception Puzzles', subtitle: 'Spot the Difference — OT Activity Pack · Vol. 1',
-    nums: [293, 295, 298, 300, 305, 309, 313, 316, 320, 323], price: '$4.97',
+    nums: [293, 295, 298, 300, 305, 309, 313, 301, 320, 323], price: '$4.97',
   },
   {
     slug: 'slp-barrier-games-vol1', niche: 'slp',
     title: 'Barrier Game Picture Pairs', subtitle: 'Speech Therapy Describing Activities · Vol. 1',
-    nums: [302, 304, 306, 307, 308, 312, 317, 319, 324, 327], price: '$7.00',
+    nums: [302, 304, 306, 310, 308, 312, 317, 319, 311, 327], price: '$7.00',
   },
   {
     slug: 'senior-large-print-vol1', niche: 'senior', largePrint: true,
     title: 'Large Print Spot the Difference', subtitle: 'For Seniors · Easy on the Eyes · No-Prep · Vol. 1',
     // curated to realistic, dignified travel & nature scenes only — no cartoons, no children
-    nums: [5, 6, 7, 8, 36, 37, 40, 49, 93, 95, 96, 97, 98, 102, 103, 104, 105, 107, 108, 112], price: '$8.99',
+    nums: [5, 6, 7, 70, 36, 37, 40, 49, 93, 95, 96, 97, 98, 102, 103, 104, 105, 107, 108, 112], price: '$8.99',
   },
   {
     slug: 'winter-kids-vol1', niche: 'kids',
     title: 'Winter Spot the Difference', subtitle: 'Cozy Snow-Day Puzzles for Kids · Vol. 1',
-    nums: [269, 270, 271, 272, 273, 274, 275, 296, 328, 38], price: '$3.99',
+    nums: [269, 271, 273, 274, 275, 296, 38], price: '$3.99',
   },
   {
     slug: 'adult-photo-hard-vol1', niche: 'adult',
     title: 'Hard Spot the Difference', subtitle: 'Photo-Style Brain Games for Adults · Vol. 1',
-    nums: [5, 6, 7, 8, 36, 40, 49, 93, 95, 112], price: '$5.99',
+    nums: [5, 6, 7, 50, 36, 40, 49, 93, 95, 112], price: '$5.99',
   },
 ];
 
@@ -358,6 +364,7 @@ async function answerPages(pdf, T, fonts, pack) {
 async function buildPdf(pack) {
   for (const n of pack.nums) {
     if (BLOCKED.has(n)) throw new Error(`BLOCKED pair #${n} in ${pack.slug} — IP risk`);
+    if (BW_UNSAFE.has(n)) throw new Error(`bw-unsafe pair #${n} in ${pack.slug} — color-only difference vanishes in B&W; swap it (see bw-check.mjs)`);
     if (!byNum[n]) throw new Error(`unknown puzzle #${n}`);
   }
   const pdf = await PDFDocument.create();
