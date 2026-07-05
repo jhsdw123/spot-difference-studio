@@ -8,3 +8,5 @@ tools/kdp-hd/
 tools/*.pdf
 tools/*.png
 tools/audit/
+
+assets/pins-all/

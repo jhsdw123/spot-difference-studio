@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puzzle Answer Checker — Spot the Difference Studio</title>
+<meta name="description" content="Check the answers to any Spot the Difference Studio puzzle — enter the puzzle number from your printed sheet or pin to reveal every difference.">
+<link rel="canonical" href="https://jhsdw123.github.io/spot-difference-studio/answers.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='42' cy='42' r='30' fill='none' stroke='%23e8262d' stroke-width='11'/%3E%3Cpath d='M65 65 L88 88' stroke='%23e8262d' stroke-width='13' stroke-linecap='round'/%3E%3Ccircle cx='42' cy='42' r='12' fill='%23ffc93c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .checker { max-width: 560px; margin: 18px auto 8px; display: flex; gap: 10px; }
+  .checker input { flex: 1; font-size: 1.3rem; padding: 12px 16px; border: 2px solid #d8d2c8; border-radius: 12px; width: 100%; font-weight: 700; text-align: center; }
+  .checker input:focus { outline: none; border-color: #e8262d; }
+  .checker button { font-size: 1.05rem; font-weight: 800; padding: 12px 22px; border: none; border-radius: 12px; background: #e8262d; color: #fff; cursor: pointer; }
+  .checker button:hover { filter: brightness(1.08); }
+  .msg { text-align: center; color: #a15c00; font-weight: 700; min-height: 24px; margin-bottom: 6px; }
+  .pairwrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0 6px; }
+  @media (max-width: 700px) { .pairwrap { grid-template-columns: 1fr; } }
+  .panel { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid #e0dad0; }
+  .panel img { width: 100%; display: block; }
+  .panel .tag { position: absolute; top: 10px; left: 10px; background: rgba(32,36,44,.82); color: #fff; font-weight: 800; padding: 4px 12px; border-radius: 8px; font-size: .95rem; }
+  .panel svg.marks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .toolbar { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 4px 0 10px; flex-wrap: wrap; }
+  .toolbar .count { font-weight: 800; font-size: 1.05rem; }
+  .toggle { font-weight: 800; padding: 9px 18px; border-radius: 999px; border: 2px solid #e8262d; background: #fff; color: #e8262d; cursor: pointer; font-size: .95rem; }
+  .toggle.on { background: #e8262d; color: #fff; }
+  .house-ad { max-width: 760px; margin: 22px auto; border: 2px dashed #d8d2c8; border-radius: 16px; padding: 18px 20px; text-align: center; background: #fffdf7; }
+  .house-ad .had-title { font-weight: 900; font-size: 1.15rem; margin-bottom: 6px; }
+  .house-ad p { color: #6b6f8a; font-size: .95rem; margin-bottom: 12px; }
+  .house-ad .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<header class="site">
+  <div class="site-inner">
+    <a class="logo" href="./">
+      <svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="42" cy="42" r="30" fill="none" stroke="#e8262d" stroke-width="11"/><path d="M65 65 L88 88" stroke="#e8262d" stroke-width="13" stroke-linecap="round"/><circle cx="42" cy="42" r="12" fill="#ffc93c"/></svg>
+      Spot the Difference Studio
+    </a>
+    <nav class="main"><a href="./#generator">Generator</a><a href="guides/">Guides</a><a href="./#faq">FAQ</a><a href="./#pro" class="pro-link">Pro</a></nav>
+  </div>
+</header>
+
+<main class="article">
+  <h1 style="text-align:center;">Puzzle Answer Checker</h1>
+  <p class="byline" style="text-align:center;">Enter the puzzle number from your printed sheet or pin — e.g. <strong>Puzzle #27</strong> → type <strong>27</strong></p>
+
+  <div class="checker">
+    <input id="num" type="number" min="1" inputmode="numeric" placeholder="Puzzle #" aria-label="Puzzle number">
+    <button id="go">Show answers</button>
+  </div>
+  <div class="msg" id="msg"></div>
+
+  <div id="result" hidden>
+    <div class="toolbar">
+      <span class="count" id="count"></span>
+      <button class="toggle on" id="toggle">Answers shown — tap to hide</button>
+    </div>
+    <div class="pairwrap">
+      <div class="panel"><span class="tag">A</span><img id="imgA" alt="Spot the difference puzzle — picture A"></div>
+      <div class="panel"><span class="tag">B</span><img id="imgB" alt="Spot the difference puzzle — picture B with answers marked">
+        <svg class="marks" id="marks" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>
+    </div>
+  </div>
+
+  <!-- ad-slot: replace this house ad with AdSense unit once approved -->
+  <div class="house-ad" id="ad-slot">
+    <div class="had-title">Enjoyed this puzzle? There's a lot more — free.</div>
+    <p>Print unlimited new puzzles with answer keys, or race your friends online in real time (up to 8 players).</p>
+    <div class="btns">
+      <a class="btn btn-primary" href="./#generator">Print more free puzzles</a>
+      <a class="btn" href="https://jhsdw123.github.io/spot-hunt/" style="border:2px solid #e8262d;">🎮 Play online vs friends</a>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="foot-links"><a href="./#generator">Generator</a><a href="guides/">Guides</a><a href="privacy.html">Privacy</a><a href="mailto:9.dain.9@gmail.com">Contact</a></div>
+  <div>© 2026 Spot the Difference Studio</div>
+</footer>
+
+<script>
+(async function () {
+  const $ = id => document.getElementById(id);
+  let byNum = null;
+
+  async function loadData() {
+    if (byNum) return byNum;
+    const [nums, manifest] = await Promise.all([
+      fetch('library/pin-numbers.json').then(r => r.json()),
+      fetch('library/manifest.json').then(r => r.json()),
+    ]);
+    const byId = Object.fromEntries(manifest.map(e => [e.id, e]));
+    byNum = {};
+    for (const [id, n] of Object.entries(nums)) if (byId[id]) byNum[n] = byId[id];
+    return byNum;
+  }
+
+  function drawMarks(entry) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = $('marks');
+    svg.innerHTML = '';
+    for (const r of entry.regions) {
+      const rad = Math.max(r.radius, 4) * 1.15;
+      for (const [stroke, width, dash, op] of [['#ffffff', 1.6, '', .55], ['#e8262d', 1.0, '3.5 1.8', 1]]) {
+        const el = document.createElementNS(NS, 'ellipse');
+        el.setAttribute('cx', r.x); el.setAttribute('cy', r.y);
+        el.setAttribute('rx', rad); el.setAttribute('ry', rad);
+        el.setAttribute('fill', 'none'); el.setAttribute('stroke', stroke);
+        el.setAttribute('stroke-width', width); el.setAttribute('opacity', op);
+        if (dash) el.setAttribute('stroke-dasharray', dash);
+        svg.appendChild(el);
+      }
+    }
+  }
+
+  async function show(n) {
+    const msg = $('msg');
+    msg.textContent = '';
+    if (!n || n < 1) { msg.textContent = 'Enter the puzzle number printed on your sheet or pin.'; return; }
+    let data;
+    try { data = await loadData(); }
+    catch { msg.textContent = 'Could not load puzzle data — please refresh and try again.'; return; }
+    const entry = data[n];
+    if (!entry) { msg.textContent = `Puzzle #${n} not found — double-check the number on your sheet.`; return; }
+    $('imgA').src = `library/img/${entry.id}_a.webp`;
+    $('imgB').src = `library/img/${entry.id}_b.webp`;
+    $('count').textContent = `Puzzle #${n} — ${entry.count} differences`;
+    drawMarks(entry);
+    $('marks').style.display = '';
+    const t = $('toggle');
+    t.classList.add('on');
+    t.textContent = 'Answers shown — tap to hide';
+    $('result').hidden = false;
+    history.replaceState(null, '', '?p=' + n);
+  }
+
+  $('go').addEventListener('click', () => show(parseInt($('num').value, 10)));
+  $('num').addEventListener('keydown', e => { if (e.key === 'Enter') show(parseInt($('num').value, 10)); });
+  $('toggle').addEventListener('click', () => {
+    const t = $('toggle'), m = $('marks');
+    const on = t.classList.toggle('on');
+    m.style.display = on ? '' : 'none';
+    t.textContent = on ? 'Answers shown — tap to hide' : 'Answers hidden — tap to reveal';
+  });
+
+  const p = parseInt(new URLSearchParams(location.search).get('p'), 10);
+  if (p) { $('num').value = p; show(p); }
+})();
+</script>
+</body>
+</html>
