@@ -61,6 +61,7 @@ for (const f of files) {
 <meta property="og:image" content="${ogImage}">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":${jstr(h1 || title)},"description":${jstr(desc)},"url":${jstr(url)},"image":${jstr(ogImage)},"author":{"@type":"Organization","name":"Spot the Difference Studio"},"publisher":{"@type":"Organization","name":"Spot the Difference Studio"}}</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4195261028421690" crossorigin="anonymous"></script>
 <!-- /seo:auto -->`;
   const next = html.includes('<!-- seo:auto -->')
     ? html.replace(/<!-- seo:auto -->[\s\S]*?<!-- \/seo:auto -->/, seoBlock)
@@ -81,6 +82,7 @@ const idxPath = join(GUIDES, 'index.html');
 let idx = readFileSync(idxPath, 'utf8');
 idx = idx.replace(/<div class="guide-list">[\s\S]*?<\/div>\s*<\/main>/, `<div class="guide-list">\n${cards}\n  </div>\n</main>`);
 if (!idx.includes('rel="canonical"')) idx = idx.replace('</head>', `<link rel="canonical" href="${BASE}guides/">\n</head>`);
+if (!idx.includes('adsbygoogle')) idx = idx.replace('</head>', `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4195261028421690" crossorigin="anonymous"></script>\n</head>`);
 writeFileSync(idxPath, idx);
 
 // --- sitemap.xml ---
