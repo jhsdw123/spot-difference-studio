@@ -18,12 +18,10 @@ const shown = await page.evaluate(() => ({
   count: document.getElementById('count').textContent,
   resultVisible: !document.getElementById('result').hidden,
   marks: document.querySelectorAll('#marks ellipse').length,
-  psHead: document.getElementById('ps-head').textContent,
-  psFoot: document.getElementById('ps-foot').textContent,
+  downloadBtn: document.getElementById('printbtn').textContent,
 }));
 console.log(JSON.stringify(shown, null, 1));
 await page.screenshot({ path: OUT + '/screen.png', fullPage: false });
-await page.pdf({ path: OUT + '/print.pdf', format: 'A4', printBackground: true });
 if (errors.length) throw new Error('page errors: ' + errors.join(' | '));
 console.log('OK ->', OUT);
 await browser.close();

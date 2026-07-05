@@ -88,6 +88,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 ${urlTag(BASE, '1.0', 'index.html')}
 ${urlTag(BASE + 'guides/', '0.7', 'guides/index.html')}
 ${articles.map(a => urlTag(a.url, '0.8', 'guides/' + a.f)).join('\n')}
+${urlTag(BASE + 'answers.html', '0.4', 'answers.html')}
 ${urlTag(BASE + 'privacy.html', '0.3', 'privacy.html')}
 </urlset>
 `;

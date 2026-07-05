@@ -32,14 +32,6 @@
   .printbtn { font-weight: 800; padding: 9px 18px; border-radius: 999px; border: 2px solid #0f766e; background: #0f766e; color: #fff; cursor: pointer; font-size: .95rem; }
   .printbtn:hover { filter: brightness(1.08); }
   .printnote { text-align: center; color: #8a8f9e; font-size: .82rem; margin-top: -2px; }
-  /* print rules: css/style.css already shows only #print-area under @media print */
-  @media print {
-    @page { size: A4 portrait; margin: 8mm; }
-    body { background: #fff; }
-    #print-area .ps-head { text-align: center; font: 800 13pt Arial, sans-serif; color: #222; margin-bottom: 3mm; }
-    #print-area img { display: block; width: 128mm; height: 128mm; margin: 0 auto 3mm; }
-    #print-area .ps-foot { text-align: center; font: 400 8.5pt Arial, sans-serif; color: #777; margin-top: 2mm; }
-  }
 </style>
 </head>
 <body>
@@ -67,9 +59,9 @@
     <div class="toolbar">
       <span class="count" id="count"></span>
       <button class="toggle on" id="toggle">Answers shown — tap to hide</button>
-      <button class="printbtn" id="printbtn">🖨 Print QR-free student copy</button>
+      <button class="printbtn" id="printbtn">⬇ Download student copy (QR-free)</button>
     </div>
-    <p class="printnote">Prints just the two big pictures — no QR, no answers, no ads. Great for classrooms &amp; seniors.</p>
+    <p class="printnote">One A4 landscape sheet, both pictures side by side — no QR, no answers, no ads. Great for classrooms &amp; seniors.</p>
     <div class="pairwrap">
       <div class="panel"><span class="tag">A</span><img id="imgA" alt="Spot the difference puzzle — picture A"></div>
       <div class="panel"><span class="tag">B</span><img id="imgB" alt="Spot the difference puzzle — picture B with answers marked">
@@ -93,17 +85,11 @@
   <div>© 2026 Spot the Difference Studio</div>
 </footer>
 
-<div id="print-area">
-  <div class="ps-head" id="ps-head"></div>
-  <img id="ps-a" alt="">
-  <img id="ps-b" alt="">
-  <div class="ps-foot" id="ps-foot"></div>
-</div>
-
 <script>
 (async function () {
   const $ = id => document.getElementById(id);
   let byNum = null;
+  let current = null;
 
   async function loadData() {
     if (byNum) return byNum;
@@ -147,10 +133,7 @@
     $('imgA').src = `library/img/${entry.id}_a.webp`;
     $('imgB').src = `library/img/${entry.id}_b.webp`;
     $('count').textContent = `Puzzle #${n} — ${entry.count} differences`;
-    $('ps-head').textContent = `Find ${entry.count} differences`;
-    $('ps-a').src = `library/img/${entry.id}_a.webp`;
-    $('ps-b').src = `library/img/${entry.id}_b.webp`;
-    $('ps-foot').textContent = `Puzzle No. ${n} · Enjoyed it? Subscribe to “Spot Hunt” on YouTube!`;
+    current = { entry, n };
     drawMarks(entry);
     $('marks').style.display = '';
     const t = $('toggle');
@@ -161,7 +144,58 @@
   }
 
   $('go').addEventListener('click', () => show(parseInt($('num').value, 10)));
-  $('printbtn').addEventListener('click', () => window.print());
+
+  // A4 landscape student copy: both pictures on one sheet, no QR/answers/branding
+  const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  $('printbtn').addEventListener('click', async () => {
+    if (!current) return;
+    const { entry, n } = current;
+    const btn = $('printbtn');
+    btn.disabled = true; btn.textContent = 'Preparing…';
+    try {
+      const [ia, ib, mouse] = await Promise.all([
+        ...['a', 'b'].map(s => loadImg(`library/img/${entry.id}_${s}.webp`)),
+        loadImg('assets/mouse-detective.png'),
+      ]);
+      const W = 1754, H = 1240;              // A4 landscape @150dpi
+      const M = 40, GAP = 34, R = 18;
+      const SZ = Math.floor((W - M * 2 - GAP) / 2);   // 820
+      const top = 130;
+      const c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      const x = c.getContext('2d');
+      x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+      x.fillStyle = '#1c1f26'; x.textAlign = 'center';
+      x.font = '800 62px Arial, sans-serif';
+      x.fillText(`Find all ${entry.count} differences!`, W / 2, 92);
+      x.imageSmoothingQuality = 'high';
+      for (const [img, ix] of [[ia, M], [ib, M + SZ + GAP]]) {
+        x.save();
+        x.beginPath(); x.roundRect(ix, top, SZ, SZ, R); x.clip();
+        x.drawImage(img, ix, top, SZ, SZ);
+        x.restore();
+        x.beginPath(); x.roundRect(ix, top, SZ, SZ, R);
+        x.strokeStyle = '#262b36'; x.lineWidth = 5; x.stroke();
+        x.beginPath(); x.roundRect(ix - 8, top - 8, SZ + 16, SZ + 16, R + 7);
+        x.strokeStyle = 'rgba(38,43,54,.28)'; x.lineWidth = 1.5; x.stroke();
+      }
+      const mh = 150, mw = mouse.width / mouse.height * mh;
+      x.drawImage(mouse, (W - mw) / 2, 966, mw, mh);
+      x.font = '700 34px Arial, sans-serif'; x.fillStyle = '#3c4250';
+      x.fillText('Enjoyed this puzzle? Play more games on the YouTube channel “Spot Hunt” — please subscribe!', W / 2, 1162);
+      x.font = '400 24px Arial, sans-serif'; x.fillStyle = '#9aa0ad';
+      x.fillText(`Puzzle No. ${n}`, W / 2, 1206);
+      c.toBlob(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `spot-the-difference-puzzle-${n}-student-copy.png`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      }, 'image/png');
+    } finally {
+      btn.disabled = false; btn.textContent = '⬇ Download student copy (QR-free)';
+    }
+  });
   $('num').addEventListener('keydown', e => { if (e.key === 'Enter') show(parseInt($('num').value, 10)); });
   $('toggle').addEventListener('click', () => {
     const t = $('toggle'), m = $('marks');
