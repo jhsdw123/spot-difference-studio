@@ -6,9 +6,11 @@
 // Output goes OUTSIDE the public repo: AutoIncome_2026/상품_팩/<slug>/
 // Usage: node make-packs.mjs [slug]   (no arg = all packs)
 import sharp from 'sharp';
+import QRCode from 'qrcode';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve, join } from 'node:path';
+import { PACKS, SITE, BRAND, PLAY_URL } from './packs-config.mjs';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const LIB = join(ROOT, 'library/img');
@@ -30,37 +32,6 @@ const BLOCKED = new Set(
     .flatMap(([a, b]) => { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; })
 );
 
-const SITE = 'https://spothuntstudio.com/spot-difference-studio/';
-const BRAND = 'Spot the Difference Studio';
-
-const PACKS = [
-  {
-    slug: 'ot-visual-perception-vol1', niche: 'ot',
-    title: 'Visual Perception Puzzles', subtitle: 'Spot the Difference — OT Activity Pack · Vol. 1',
-    nums: [293, 295, 298, 300, 305, 309, 313, 301, 320, 323], price: '$4.97',
-  },
-  {
-    slug: 'slp-barrier-games-vol1', niche: 'slp',
-    title: 'Barrier Game Picture Pairs', subtitle: 'Speech Therapy Describing Activities · Vol. 1',
-    nums: [302, 304, 306, 310, 308, 312, 317, 319, 311, 327], price: '$7.00',
-  },
-  {
-    slug: 'senior-large-print-vol1', niche: 'senior', largePrint: true,
-    title: 'Large Print Spot the Difference', subtitle: 'For Seniors · Easy on the Eyes · No-Prep · Vol. 1',
-    // curated to realistic, dignified travel & nature scenes only — no cartoons, no children
-    nums: [5, 6, 7, 70, 36, 37, 40, 49, 93, 95, 96, 97, 98, 102, 103, 104, 105, 107, 108, 112], price: '$8.99',
-  },
-  {
-    slug: 'winter-kids-vol1', niche: 'kids',
-    title: 'Winter Spot the Difference', subtitle: 'Cozy Snow-Day Puzzles for Kids · Vol. 1',
-    nums: [269, 271, 273, 274, 275, 296, 38], price: '$3.99',
-  },
-  {
-    slug: 'adult-photo-hard-vol1', niche: 'adult',
-    title: 'Hard Spot the Difference', subtitle: 'Photo-Style Brain Games for Adults · Vol. 1',
-    nums: [5, 6, 7, 50, 36, 40, 49, 93, 95, 112], price: '$5.99',
-  },
-];
 
 // US Letter
 const PW = 612, PH = 792, M = 40;
