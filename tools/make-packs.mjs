@@ -270,6 +270,26 @@ function touPage(pdf, T, fonts) {
   T.center(p, BRAND, fonts.reg, 9, 46, GRAY);
 }
 
+async function digitalPage(pdf, T, fonts, pack) {
+  const p = pdf.addPage([PW, PH]);
+  T.center(p, 'BONUS — Play This Pack Online', fonts.bold, 23, PH - 100);
+  T.center(p, 'No printer? Play the whole pack on any iPad, tablet, or computer.', fonts.reg, 12, PH - 126, GRAY);
+  const url = PLAY_URL + '?c=' + encodeURIComponent(pack.code);
+  const qrPng = await QRCode.toBuffer(url, { margin: 1, width: 440, color: { dark: '#20242c', light: '#ffffff' } });
+  const qr = await pdf.embedPng(qrPng);
+  const qs = 196; p.drawImage(qr, { x: (PW - qs) / 2, y: PH - 360, width: qs, height: qs });
+  T.center(p, 'YOUR CODE', fonts.reg, 11, PH - 388, GRAY);
+  T.center(p, pack.code, fonts.bold, 32, PH - 426, ACCENT);
+  const mode = pack.playMode === 'timer' ? 'beat the clock and see your results at the end' : 'find them at your own pace — no timer, no pressure';
+  T.para(p, [
+    '1.  On a tablet: open the camera and scan the QR code above.',
+    '2.  On a computer: go to  spothuntstudio.com/play',
+    '3.  Enter your code, then ' + mode + '.',
+  ], M + 46, PH - 486, 12.5, 26);
+  T.center(p, 'This code unlocks only your pack. Keep this page — it is part of your purchase.', fonts.reg, 10, 130, GRAY);
+  T.center(p, BRAND, fonts.reg, 9, 58, GRAY);
+}
+
 function creditsBackPage(pdf, T, fonts, pack) {
   const p = pdf.addPage([PW, PH]);
   T.center(p, 'Thank you!', fonts.bold, 24, PH - 130);
@@ -283,9 +303,8 @@ function creditsBackPage(pdf, T, fonts, pack) {
   T.center(p, audience, fonts.reg, 12, PH - 165, GRAY);
   T.center(p, 'Leave feedback to earn TpT credits toward future purchases —', fonts.reg, 12, PH - 205, INK);
   T.center(p, 'and follow the store for new themed packs every month.', fonts.reg, 12, PH - 225, INK);
-  T.center(p, 'Print unlimited free puzzles & check answers online:', fonts.reg, 12, PH - 275, GRAY);
-  T.center(p, SITE.replace('https://', ''), fonts.bold, 13, PH - 297, TEAL);
-  T.center(p, 'Play more on YouTube — search "Spot Hunt" and subscribe!', fonts.reg, 11, PH - 325, GRAY);
+  T.center(p, 'Prefer a screen? Play this pack online with your code:', fonts.reg, 12, PH - 275, GRAY);
+  T.center(p, 'spothuntstudio.com/play  ·  code ' + pack.code, fonts.bold, 13, PH - 297, TEAL);
   T.para(p, ['Credits: Illustrations generated with AI assistance and hand-verified for quality by', 'the ' + BRAND + ' team. Fonts: Helvetica (standard). No third-party clip art used.'], M + 8, 120, 9.5, 14, fonts.reg, GRAY);
   T.center(p, '© ' + BRAND + '  ·  single-classroom / personal use only', fonts.reg, 9, 60, GRAY);
 }
@@ -345,6 +364,7 @@ async function buildPdf(pack) {
 
   coverPage(pdf, T, fonts, pack, covImgs);
   contentsPage(pdf, T, fonts, pack);
+  await digitalPage(pdf, T, fonts, pack);                  // BONUS online-play page (QR + code)
   if (pack.niche === 'slp') touPage(pdf, T, fonts);       // SLP puts TOU right after cover-area
   howToPage(pdf, T, fonts, pack);
   if (pack.niche === 'slp') conceptIndexPages(pdf, T, fonts);
