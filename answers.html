@@ -158,17 +158,24 @@
         loadImg('assets/mouse-detective.png'),
       ]);
       const W = 1754, H = 1240;              // A4 landscape @150dpi
-      const M = 40, GAP = 34, R = 18;
-      const SZ = Math.floor((W - M * 2 - GAP) / 2);   // 820
-      const top = 130;
+      const M = 28, GAP = 24, R = 18;
+      const SZ = Math.floor((W - M * 2 - GAP) / 2);   // 837
+      const top = 210;
       const c = document.createElement('canvas');
       c.width = W; c.height = H;
       const x = c.getContext('2d');
       x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
-      x.fillStyle = '#1c1f26'; x.textAlign = 'center';
-      x.font = '800 62px Arial, sans-serif';
-      x.fillText(`Find all ${entry.count} differences!`, W / 2, 92);
       x.imageSmoothingQuality = 'high';
+      // header: mouse logo at the left of a big title, group centered
+      x.fillStyle = '#1c1f26';
+      x.font = '800 92px Arial, sans-serif';
+      const title = `Find all ${entry.count} differences!`;
+      const tw = x.measureText(title).width;
+      const mh = 180, mw = mouse.width / mouse.height * mh;
+      const gx = (W - (mw + 26 + tw)) / 2;
+      x.drawImage(mouse, gx, 14, mw, mh);
+      x.textAlign = 'left';
+      x.fillText(title, gx + mw + 26, 132);
       for (const [img, ix] of [[ia, M], [ib, M + SZ + GAP]]) {
         x.save();
         x.beginPath(); x.roundRect(ix, top, SZ, SZ, R); x.clip();
@@ -179,12 +186,11 @@
         x.beginPath(); x.roundRect(ix - 8, top - 8, SZ + 16, SZ + 16, R + 7);
         x.strokeStyle = 'rgba(38,43,54,.28)'; x.lineWidth = 1.5; x.stroke();
       }
-      const mh = 150, mw = mouse.width / mouse.height * mh;
-      x.drawImage(mouse, (W - mw) / 2, 966, mw, mh);
-      x.font = '700 34px Arial, sans-serif'; x.fillStyle = '#3c4250';
-      x.fillText('Enjoyed this puzzle? Play more games on the YouTube channel “Spot Hunt” — please subscribe!', W / 2, 1162);
-      x.font = '400 24px Arial, sans-serif'; x.fillStyle = '#9aa0ad';
-      x.fillText(`Puzzle No. ${n}`, W / 2, 1206);
+      x.textAlign = 'center';
+      x.font = '700 36px Arial, sans-serif'; x.fillStyle = '#3c4250';
+      x.fillText('Enjoyed this puzzle? Play more games on the YouTube channel “Spot Hunt” — please subscribe!', W / 2, top + SZ + 88);
+      x.font = '400 26px Arial, sans-serif'; x.fillStyle = '#9aa0ad';
+      x.fillText(`Puzzle No. ${n}`, W / 2, top + SZ + 140);
       c.toBlob(blob => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
