@@ -41,7 +41,8 @@ const PACKS = [
   {
     slug: 'senior-large-print-vol1', niche: 'senior', largePrint: true,
     title: 'Large Print Spot the Difference', subtitle: 'For Seniors · Easy on the Eyes · No-Prep · Vol. 1',
-    nums: [1, 3, 5, 6, 7, 8, 10, 11, 12, 13, 22, 33, 34, 36, 40, 49, 54, 60, 61, 64], price: '$8.99',
+    // curated to realistic, dignified travel & nature scenes only — no cartoons, no children
+    nums: [5, 6, 7, 8, 36, 37, 40, 49, 93, 95, 96, 97, 98, 102, 103, 104, 105, 107, 108, 112], price: '$8.99',
   },
   {
     slug: 'winter-kids-vol1', niche: 'kids',
