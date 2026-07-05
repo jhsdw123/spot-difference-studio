@@ -5,7 +5,7 @@ const errors = [];
 page.on('pageerror', e => errors.push(e.message));
 page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
 await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
-await page.goto('https://jhsdw123.github.io/spot-hunt/', { waitUntil: 'networkidle0', timeout: 60000 });
+await page.goto('https://spothuntstudio.com/spot-hunt/', { waitUntil: 'networkidle0', timeout: 60000 });
 await page.waitForFunction(() => window.__sh && window.__sh.state.sequence.length > 0, { timeout: 25000 });
 console.log('LIVE pool:', await page.$eval('#home-pool', e => e.textContent));
 await page.tap('#btn-play');

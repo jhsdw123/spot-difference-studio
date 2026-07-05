@@ -20,7 +20,7 @@ const HELPER_DATA = resolve(import.meta.dirname, '../../pinterest-upload-helper-
 const MANIFEST = JSON.parse(readFileSync(resolve(import.meta.dirname, '../library/manifest.json'), 'utf8'));
 const bySuffix = (s) => MANIFEST.find(e => e.id.endsWith(s));
 
-const SITE = 'https://jhsdw123.github.io/spot-difference-studio/';
+const SITE = 'https://spothuntstudio.com/spot-difference-studio/';
 const ALL = process.argv.includes('--all');
 const FORCE = process.argv.includes('--force');
 

@@ -11,7 +11,7 @@ const page = await browser.newPage();
 const errors = [];
 page.on('pageerror', e => errors.push(String(e)));
 await page.setViewport({ width: 900, height: 1200 });
-await page.goto('https://jhsdw123.github.io/spot-difference-studio/answers.html?p=5', { waitUntil: 'networkidle0' });
+await page.goto('https://spothuntstudio.com/spot-difference-studio/answers.html?p=5', { waitUntil: 'networkidle0' });
 await new Promise(r => setTimeout(r, 800));
 
 const shown = await page.evaluate(() => ({

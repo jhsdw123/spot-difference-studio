@@ -4,7 +4,7 @@ const page = await browser.newPage();
 const errors = [];
 page.on('pageerror', e => errors.push(e.message));
 page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
-await page.goto('https://jhsdw123.github.io/spot-difference-studio/', { waitUntil: 'networkidle0', timeout: 45000 });
+await page.goto('https://spothuntstudio.com/spot-difference-studio/', { waitUntil: 'networkidle0', timeout: 45000 });
 await page.waitForSelector('#pv-a svg');
 for (const t of ['christmas', 'halloween']) {
   await page.click(`[data-theme="${t}"]`);

@@ -5,7 +5,7 @@ import puppeteer from 'puppeteer';
 import { mkdirSync } from 'node:fs';
 
 const SCENARIO = process.argv[2] || 's1';
-const URL = process.argv[3] || 'https://jhsdw123.github.io/spot-hunt/';
+const URL = process.argv[3] || 'https://spothuntstudio.com/spot-hunt/';
 const SHOT_DIR = new globalThis.URL('./audit/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 mkdirSync(SHOT_DIR, { recursive: true });
 

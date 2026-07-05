@@ -11,7 +11,7 @@ import { execSync } from 'node:child_process';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const GUIDES = join(ROOT, 'guides');
-const BASE = 'https://jhsdw123.github.io/spot-difference-studio/';
+const BASE = 'https://spothuntstudio.com/spot-difference-studio/';
 const OG_IMAGE = BASE + 'assets/pins/pin-free.png'; // 2:3 — ideal for Pinterest saves
 
 const git = (args) => {

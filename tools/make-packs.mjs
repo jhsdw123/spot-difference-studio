@@ -21,7 +21,7 @@ const BLOCKED = new Set([
 ].flatMap(x => Array.isArray(x) ? range(x[0], x[1]) : [x]));
 function range(a, b) { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; }
 
-const SITE = 'https://jhsdw123.github.io/spot-difference-studio/';
+const SITE = 'https://spothuntstudio.com/spot-difference-studio/';
 const BRAND = 'Spot the Difference Studio';
 
 const PACKS = [

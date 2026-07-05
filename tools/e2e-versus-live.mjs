@@ -8,7 +8,7 @@ async function mk(name) {
   const page = await ctx.newPage();
   page.on('pageerror', e => console.log(`[${name}] ERR`, e.message));
   await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
-  await page.goto('https://jhsdw123.github.io/spot-hunt/', { waitUntil: 'networkidle0', timeout: 60000 });
+  await page.goto('https://spothuntstudio.com/spot-hunt/', { waitUntil: 'networkidle0', timeout: 60000 });
   await page.waitForFunction(() => window.__sh?.state.sequence.length > 0, { timeout: 25000 });
   await page.tap('#btn-versus');
   await page.evaluate(n => { document.querySelector('#vs-name').value = n; }, name);
