@@ -32,14 +32,13 @@
   .printbtn { font-weight: 800; padding: 9px 18px; border-radius: 999px; border: 2px solid #0f766e; background: #0f766e; color: #fff; cursor: pointer; font-size: .95rem; }
   .printbtn:hover { filter: brightness(1.08); }
   .printnote { text-align: center; color: #8a8f9e; font-size: .82rem; margin-top: -2px; }
-  #printsheet { display: none; }
+  /* print rules: css/style.css already shows only #print-area under @media print */
   @media print {
-    body > *:not(#printsheet) { display: none !important; }
-    #printsheet { display: block; }
     @page { size: A4 portrait; margin: 8mm; }
-    #printsheet .ps-head { text-align: center; font: 800 13pt Arial, sans-serif; color: #222; margin-bottom: 3mm; }
-    #printsheet img { display: block; width: 128mm; height: 128mm; margin: 0 auto 3mm; }
-    #printsheet .ps-foot { text-align: center; font: 400 8.5pt Arial, sans-serif; color: #777; margin-top: 2mm; }
+    body { background: #fff; }
+    #print-area .ps-head { text-align: center; font: 800 13pt Arial, sans-serif; color: #222; margin-bottom: 3mm; }
+    #print-area img { display: block; width: 128mm; height: 128mm; margin: 0 auto 3mm; }
+    #print-area .ps-foot { text-align: center; font: 400 8.5pt Arial, sans-serif; color: #777; margin-top: 2mm; }
   }
 </style>
 </head>
@@ -94,7 +93,7 @@
   <div>© 2026 Spot the Difference Studio</div>
 </footer>
 
-<div id="printsheet">
+<div id="print-area">
   <div class="ps-head" id="ps-head"></div>
   <img id="ps-a" alt="">
   <img id="ps-b" alt="">
