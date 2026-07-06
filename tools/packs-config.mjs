@@ -26,6 +26,13 @@ export const PACKS = [
     code: 'SRLP1-T6W2', playMode: 'gentle',
   },
   {
+    // Vintage black-and-white photo edition — source images are already B&W, so no color/B&W duplication (mono)
+    slug: 'senior-vintage-bw-vol2', niche: 'senior', largePrint: true, mono: true,
+    title: 'Large Print Spot the Difference', subtitle: 'Vintage Black & White Photo Edition — For Seniors · Vol. 2',
+    nums: [389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402], price: '$8.99',
+    code: 'SRVB2-N7Y3', playMode: 'gentle',
+  },
+  {
     slug: 'winter-kids-vol1', niche: 'kids',
     title: 'Winter Spot the Difference', subtitle: 'Cozy Snow-Day Puzzles for Kids · Vol. 1',
     nums: [269, 271, 273, 274, 275, 296, 38], price: '$3.99',

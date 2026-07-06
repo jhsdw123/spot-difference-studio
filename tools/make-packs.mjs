@@ -74,7 +74,7 @@ function coverPage(pdf, T, fonts, pack, imgs) {
     adult: 'Genuinely challenging photo-style brain games',
   }[pack.niche];
   T.center(p, bullets, fonts.reg, 12, PH - 444, GRAY);
-  T.center(p, 'Color + Black & White versions of every puzzle inside', fonts.reg, 11, PH - 466, GRAY);
+  T.center(p, pack.mono ? 'Authentic vintage black & white photographs' : 'Color + Black & White versions of every puzzle inside', fonts.reg, 11, PH - 466, GRAY);
   T.center(p, BRAND, fonts.bold, 12, 96, TEAL);
   T.center(p, 'Illustrations AI-assisted, every puzzle hand-verified by a human.', fonts.reg, 8.5, 74, GRAY);
   T.center(p, 'Personal & single-classroom use — see Terms of Use inside.', fonts.reg, 8.5, 60, GRAY);
@@ -84,7 +84,11 @@ function contentsPage(pdf, T, fonts, pack) {
   const p = pdf.addPage([PW, PH]);
   T.center(p, "WHAT'S INCLUDED", fonts.bold, 24, PH - 100);
   const n = pack.nums.length;
-  const rows = [
+  const rows = pack.mono ? [
+    `${n} vintage black & white photo puzzles`,
+    `${n} answer keys — every difference circled`,
+    'Large print: one full-size picture per page',
+  ] : [
     `${n} spot-the-difference puzzle scenes (color)`,
     `${n} black & white / ink-saver versions of every scene`,
     `${n} answer keys — every difference circled`,
@@ -370,7 +374,7 @@ async function buildPdf(pack) {
   if (pack.niche === 'slp') conceptIndexPages(pdf, T, fonts);
 
   await puzzlePages(pdf, T, fonts, pack, false);          // color
-  await puzzlePages(pdf, T, fonts, pack, true);           // B&W
+  if (!pack.mono) await puzzlePages(pdf, T, fonts, pack, true);  // B&W duplicate (skip for already-B&W mono packs)
 
   if (pack.niche === 'slp') wordListPage(pdf, T, fonts, pack);
   if (pack.niche === 'ot') dataSheetPage(pdf, T, fonts, pack, 'FIND & RECORD SHEET', ['Puzzle', 'Found', 'Time', 'Notes']);
@@ -402,7 +406,7 @@ async function buildPreviews(pack, outDir) {
     <text x="735" y="1295" text-anchor="middle" font-family="Arial" font-weight="800" font-size="34" fill="#555b6e">A</text>
     <text x="1265" y="1295" text-anchor="middle" font-family="Arial" font-weight="800" font-size="34" fill="#555b6e">B</text>
     <rect x="120" y="1330" width="1760" height="150" rx="24" fill="#0f766e"/>
-    <text x="50%" y="1392" text-anchor="middle" font-family="Arial" font-weight="800" font-size="46" fill="#ffffff">${pack.nums.length} PUZZLES · COLOR + B&amp;W · ANSWER KEYS${pack.largePrint ? ' · LARGE PRINT' : ''}</text>
+    <text x="50%" y="1392" text-anchor="middle" font-family="Arial" font-weight="800" font-size="46" fill="#ffffff">${pack.nums.length} PUZZLES · ${pack.mono ? 'VINTAGE B&amp;W' : 'COLOR + B&amp;W'} · ANSWER KEYS${pack.largePrint ? ' · LARGE PRINT' : ''}</text>
     <text x="50%" y="1448" text-anchor="middle" font-family="Arial" font-weight="700" font-size="28" fill="#d7f4ef">Printable PDF · US Letter + A4 · hand-verified puzzles</text>
   </svg>`);
   await sharp({ create: { width: W, height: H, channels: 3, background: '#faf6ef' } }).composite([
@@ -439,7 +443,7 @@ async function buildPreviews(pack, outDir) {
   const listByNiche = {
     ot: ['Teacher / therapist how-to-use guide', 'Find & record score sheet', 'Color + B&W of every scene', 'Circled answer keys', 'Terms of Use + credits'],
     slp: ['Barrier-game setup guide', 'Target-concept prompt index', 'Vocabulary word list per scene', 'Data-collection sheet', 'Color + B&W + answer keys'],
-    senior: ['Large print — one picture per page', 'Caregiver how-to & adaptation notes', 'Printable game markers', 'Color + B&W of every scene', 'Circled answer keys'],
+    senior: [pack.mono ? 'Authentic vintage black & white photos' : 'Color + B&W of every scene', 'Large print — one picture per page', 'Caregiver how-to & adaptation notes', 'Printable game markers', 'Circled answer keys'],
     kids: ['Color + B&W of every scene', 'Circled answer keys', 'Print & race — family game night', 'Terms of Use + credits'],
     adult: ['Photo-style hard puzzles', 'Color + B&W of every scene', 'Circled answer keys', 'Terms of Use + credits'],
   }[pack.niche];
